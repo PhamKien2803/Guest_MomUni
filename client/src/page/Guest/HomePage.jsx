@@ -4,8 +4,9 @@ import {
     createTheme, ThemeProvider, CssBaseline, AppBar, Toolbar, Typography,
     Button, Container, Box, Card, CardMedia, CardContent, Grid, Link,
     IconButton, Chip, TextField, Alert, Snackbar,
-    Paper, Stack, Divider, useTheme, alpha
+    Paper, Stack, Divider, useTheme, alpha, CircularProgress, Avatar
 } from '@mui/material';
+import { AnimatePresence } from 'framer-motion';
 import { LoadingButton } from '@mui/lab';
 import {
     Menu as MenuIcon,
@@ -20,7 +21,12 @@ import {
     Instagram,
     Twitter,
     Send,
-    ChevronRight
+    PregnantWoman,
+    BabyChangingStation,
+    Fastfood,
+    DirectionsWalk,
+    Psychology,
+    Cottage
 } from '@mui/icons-material';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Navigation, Autoplay } from 'swiper/modules';
@@ -29,12 +35,19 @@ import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+
+
+
 const elegantTheme = createTheme({
     palette: {
-        primary: { main: '#E5A3B3' }, // Hồng pastel chính
-        secondary: { main: '#A0C4B8' }, // Xanh bạc hà phụ
-        background: { default: '#FFF7F5', paper: '#FFFFFF' }, // Nền hồng rất nhạt
-        text: { primary: '#5D4037', secondary: '#8D6E63' }, // Màu chữ nâu ấm
+        primary: { main: '#E5A3B3', light: '#fce4ec' },
+        secondary: { main: '#A0C4B8' },
+        background: { default: '#FFF7F5', paper: '#FFFFFF' },
+        text: { primary: '#5D4037', secondary: '#8D6E63' },
+        success: { main: '#A0C4B8' },
+        warning: { main: '#FFDAB9' },
+        info: { main: '#B2DFDB' },
+        error: { main: '#FFCDD2' },
     },
     typography: {
         fontFamily: '"Nunito Sans", sans-serif',
@@ -57,17 +70,6 @@ const sectionVariants = {
     visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
 };
 const MotionBox = motion(Box);
-const blogPosts = [
-    { id: 1, title: 'Bí quyết giúp bé ngủ ngon giấc', image: 'https://images.unsplash.com/photo-1546015720-693a131655f4?q=80&w=870', category: 'Giấc ngủ', excerpt: 'Khám phá những phương pháp khoa học và dịu dàng để bé yêu có giấc ngủ sâu và trọn vẹn mỗi đêm.', color: 'primary' },
-    { id: 2, title: 'Dinh dưỡng vàng cho mẹ bầu', image: 'https://images.unsplash.com/photo-1555412654-72a34a520934?q=80&w=870', category: 'Dinh dưỡng', excerpt: 'Chế độ ăn uống cân bằng là nền tảng vững chắc cho sự phát triển của thai nhi và sức khỏe của mẹ.', color: 'secondary' },
-    { id: 3, title: 'Hoạt động gắn kết tình cảm mẹ con', image: 'https://images.unsplash.com/photo-1476703893627-68b1ea3815a5?q=80&w=870', category: 'Phát triển', excerpt: 'Những trò chơi đơn giản nhưng ý nghĩa giúp tăng cường sự kết nối thiêng liêng giữa mẹ và con yêu.', color: 'success' },
-    { id: 4, title: 'Yoga cho mẹ sau sinh: Lấy lại vóc dáng', image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=920', category: 'Sức khỏe', excerpt: 'Các bài tập yoga nhẹ nhàng giúp phục hồi cơ thể, giảm căng thẳng và mang lại năng lượng tích cực.', color: 'warning' },
-    { id: 5, title: 'Thực đơn ăn dặm cho bé 6 tháng', image: 'https://images.unsplash.com/photo-1565792911364-5431b34b5c46?q=80&w=870', category: 'Ăn dặm', excerpt: 'Hướng dẫn chi tiết cách chuẩn bị bữa ăn dặm đầu đời đầy đủ dinh dưỡng và hấp dẫn cho bé.', color: 'info' },
-    { id: 6, title: 'Đối phó với khủng hoảng tuổi lên 2', image: 'https://images.unsplash.com/photo-1519682577862-22b62b24e493?q=80&w=870', category: 'Tâm lý', excerpt: 'Những bí quyết giúp cha mẹ thấu hiểu và đồng hành cùng con vượt qua giai đoạn phát triển quan trọng này.', color: 'error' },
-];
-
-// --- COMPONENTS ---
-
 const PulsatingHeartsAnimation = ({
     size = 30,
     motherHeartChar = "💖",
@@ -403,56 +405,77 @@ const HeroSection = () => {
     );
 };
 
-// --- ✨ FEATURES SECTION UPDATED ✨ ---
+// --- Dán COMPONENT MỚI VÀO ĐÂY ---
+
 const FeaturesSection = () => {
     const theme = useTheme();
     const featuresData = [
         { icon: <Restaurant />, title: "Dinh dưỡng", description: "Công thức cho mẹ và bé." },
         { icon: <ChildCare />, title: "Phát triển", description: "Cột mốc quan trọng." },
-        { icon: <LocalHospital />, title: "Sức khỏe & Bệnh", description: "Phòng và trị bệnh." },
-        { icon: <Spa />, title: "Làm đẹp & Yoga", description: "Rạng rỡ mỗi ngày." },
+        { icon: <LocalHospital />, title: "Sức khỏe", description: "Phòng và trị bệnh." },
+        { icon: <Spa />, title: "Làm đẹp", description: "Rạng rỡ mỗi ngày." },
         { icon: <School />, title: "Giáo dục sớm", description: "Nền tảng tương lai." },
+        { icon: <FavoriteBorder />, title: "Tâm lý", description: "Thấu hiểu & sẻ chia." },
     ];
 
-    const FeatureCard = ({ icon, title, description }) => (
-        <MotionBox
-            component={Paper}
-            elevation={2}
-            sx={{
-                p: 3,
-                textAlign: 'center',
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                borderRadius: '16px',
-                border: '1px solid',
-                borderColor: alpha(theme.palette.primary.main, 0.2),
-                transition: 'all 0.3s ease-in-out',
-                cursor: 'pointer',
-                '&:hover': {
-                    transform: 'translateY(-8px)',
-                    boxShadow: `0px 16px 32px ${alpha(theme.palette.primary.main, 0.25)}`,
-                    borderColor: theme.palette.primary.main,
-                },
-                '&:hover .feature-icon-wrapper': {
-                    transform: 'scale(1.15)',
-                    bgcolor: alpha(theme.palette.primary.main, 0.15),
-                }
-            }}
-        >
-            <Box>
+    const FeatureCard = ({ icon, title, description }) => {
+        const cardRef = useRef(null);
+
+        const handleMouseMove = (e) => {
+            if (!cardRef.current) return;
+            const { left, top, width, height } = cardRef.current.getBoundingClientRect();
+            // Lấy vị trí chuột tương đối với card
+            const x = e.clientX - left;
+            const y = e.clientY - top;
+
+            const rotateX = (y - height / 2) / (height / 2) * -10;
+            const rotateY = (x - width / 2) / (width / 2) * 10;
+
+            cardRef.current.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`;
+            cardRef.current.style.transition = 'transform 0.1s linear';
+        };
+
+        const handleMouseLeave = () => {
+            if (!cardRef.current) return;
+            cardRef.current.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+            cardRef.current.style.transition = 'transform 0.4s ease';
+        };
+
+        return (
+            <MotionBox
+                ref={cardRef}
+                component={Paper}
+                elevation={4}
+                onMouseMove={handleMouseMove}
+                onMouseLeave={handleMouseLeave}
+                sx={{
+                    p: 3,
+                    textAlign: 'center',
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: '16px',
+                    border: '1px solid',
+                    borderColor: alpha(theme.palette.primary.main, 0.2),
+                    backgroundColor: alpha('#ffffff', 0.7),
+                    backdropFilter: 'blur(5px)',
+                    cursor: 'pointer',
+                    willChange: 'transform',
+                    transition: 'all 0.4s ease',
+                    '&:hover .feature-icon-wrapper': {
+                        transform: 'scale(1.15)',
+                        bgcolor: alpha(theme.palette.primary.main, 0.15),
+                    }
+                }}
+            >
                 <Box
                     className="feature-icon-wrapper"
                     sx={{
-                        width: 72,
-                        height: 72,
-                        borderRadius: '50%',
+                        width: 72, height: 72, borderRadius: '50%',
                         bgcolor: alpha(theme.palette.primary.main, 0.08),
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
                         mb: 2.5,
                         transition: 'transform 0.3s ease-in-out, background-color 0.3s ease-in-out',
                     }}
@@ -465,28 +488,9 @@ const FeaturesSection = () => {
                 <Typography variant="body2" color="text.secondary" sx={{ minHeight: '2.5em' }}>
                     {description}
                 </Typography>
-            </Box>
-            <Link
-                href="#"
-                variant="body2"
-                sx={{
-                    mt: 2,
-                    display: 'flex',
-                    alignItems: 'center',
-                    color: 'primary.main',
-                    fontWeight: 600,
-                    textDecoration: 'none',
-                    opacity: 0,
-                    transition: 'opacity 0.3s ease-in-out',
-                    '.MuiPaper-root:hover &': {
-                        opacity: 1,
-                    }
-                }}
-            >
-                Xem thêm <ChevronRight sx={{ fontSize: '1.1rem', ml: 0.5 }} />
-            </Link>
-        </MotionBox>
-    );
+            </MotionBox>
+        );
+    };
 
     return (
         <MotionBox sx={{ py: 10, backgroundColor: theme.palette.background.default }} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={sectionVariants}>
@@ -499,7 +503,7 @@ const FeaturesSection = () => {
                 </Typography>
                 <Grid container spacing={3.5} justifyContent="center">
                     {featuresData.map((feature, index) => (
-                        <Grid item xs={6} sm={4} md={3} key={index}>
+                        <Grid item xs={12} sm={6} md={4} lg={3.5} key={index}>
                             <FeatureCard {...feature} />
                         </Grid>
                     ))}
@@ -509,8 +513,214 @@ const FeaturesSection = () => {
     );
 };
 
+// --- ✨ NEW COMPONENT: HORIZONTAL & AUTOMATIC MOTHERHOOD JOURNEY ✨ ---
+const MotherhoodJourneySection = () => {
+    const theme = useTheme();
+    const [currentIndex, setCurrentIndex] = useState(0);
+
+    const journeyData = [
+        {
+            time: "3 Tháng đầu",
+            icon: <PregnantWoman />,
+            title: "Mang thai diệu kỳ",
+            description: "Chăm sóc bản thân, làm quen với những thay đổi đầu tiên của cơ thể.",
+        },
+        {
+            time: "0-6 Tháng",
+            icon: <BabyChangingStation />,
+            title: "Chào đón Sơ sinh",
+            description: "Kiến thức về giấc ngủ, dinh dưỡng và sự gắn kết những ngày đầu.",
+        },
+        {
+            time: "6-12 Tháng",
+            icon: <Fastfood />,
+            title: "Bé tập Ăn dặm",
+            description: "Xây dựng thực đơn đa dạng, giúp bé khám phá thế giới ẩm thực.",
+        },
+        {
+            time: "1-2 Tuổi",
+            icon: <DirectionsWalk />,
+            title: "Bước chân đầu đời",
+            description: "Đồng hành cùng con trong giai đoạn phát triển thể chất và ngôn ngữ.",
+        },
+        {
+            time: "2-3 Tuổi",
+            icon: <Psychology />,
+            title: "Khủng hoảng tuổi lên 2",
+            description: "Thấu hiểu và định hướng cảm xúc, tính cách của con.",
+        },
+        {
+            time: "3+ Tuổi",
+            icon: <Cottage />,
+            title: "Bé đến nhà trẻ",
+            description: "Chuẩn bị tâm lý và kỹ năng cho con bước vào môi trường mới.",
+        },
+    ];
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentIndex((prevIndex) => (prevIndex + 1) % journeyData.length);
+        }, 4000);
+
+        return () => clearInterval(timer);
+    }, [journeyData.length]);
+
+    const currentMilestone = journeyData[currentIndex];
+
+    const pulsatingGlowKeyframes = `
+  @keyframes pulsatingGlow {
+    0% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 ${alpha(theme.palette.primary.main, 0.7)};
+    }
+    50% {
+      transform: scale(1.1);
+      box-shadow: 0 0 10px 10px ${alpha(theme.palette.primary.main, 0)};
+    }
+    100% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 ${alpha(theme.palette.primary.main, 0)};
+    }
+  }
+`;
+
+    return (
+        <Box sx={{ py: 12, backgroundColor: theme.palette.background.default, overflow: 'hidden' }}>
+            <style>{pulsatingGlowKeyframes}</style>
+
+            <Container maxWidth="md">
+                <Typography variant="h3" align="center" color="text.primary" gutterBottom>
+                    Hành Trình Làm Mẹ
+                </Typography>
+                <Typography variant="h6" align="center" color="text.secondary" sx={{ mb: 8, fontWeight: 400 }}>
+                    Mỗi giai đoạn là một chương mới đầy yêu thương và những cột mốc đáng nhớ.
+                </Typography>
+
+                <Box sx={{ textAlign: 'center' }}>
+                    <Box sx={{ position: 'relative', height: '50px', mb: 4 }}>
+                        <Box sx={{
+                            position: 'absolute', top: '50%', left: '5%', right: '5%',
+                            height: '4px', bgcolor: alpha(theme.palette.primary.main, 0.2),
+                            transform: 'translateY(-50%)',
+                        }} />
+
+                        <Box sx={{
+                            position: 'absolute', top: '50%', left: '5%', right: '5%',
+                            display: 'flex', justifyContent: 'space-between',
+                            transform: 'translateY(-50%)',
+                        }}>
+                            {journeyData.map((_, index) => (
+                                <Box key={index} sx={{
+                                    width: '18px',
+                                    height: '18px',
+                                    borderRadius: '50%',
+                                    backgroundColor: 'primary.main',
+                                    border: `3px solid ${theme.palette.background.default}`,
+                                    transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                                    transform: index === currentIndex ? 'scale(1.2)' : 'scale(0.8)',
+                                    opacity: index === currentIndex ? 1 : 0.6,
+
+                                    // 2. Áp dụng animation cho mốc hiện tại
+                                    animation: index === currentIndex
+                                        ? `pulsatingGlow 2s infinite ease-in-out`
+                                        : 'none',
+                                }} />
+                            ))}
+                        </Box>
+
+                        <motion.div
+                            animate={{ left: `calc(${(currentIndex / (journeyData.length - 1)) * 90}% + 5%)` }}
+                            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                            style={{
+                                position: 'absolute', top: '50%',
+                                transform: 'translate(-50%, -50%)',
+                                width: 32, height: 32, borderRadius: '50%',
+                                backgroundColor: theme.palette.secondary.main,
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
+                            }}
+                        >
+                            <span role="img" aria-label="baby" style={{ fontSize: '18px' }}>👶</span>
+                        </motion.div>
+                    </Box>
+
+                    <Box sx={{ minHeight: 160, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <AnimatePresence mode="wait">
+                            <motion.div
+                                key={currentIndex}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -20 }}
+                                transition={{ duration: 0.5 }}
+                            >
+                                <Chip
+                                    avatar={<Avatar sx={{ bgcolor: 'primary.main' }}>{React.cloneElement(currentMilestone.icon, { sx: { color: '#fff' } })}</Avatar>}
+                                    label={currentMilestone.time}
+                                    sx={{ mb: 2, fontSize: '1rem', fontWeight: 600, p: 2.2 }}
+                                />
+                                <Typography variant="h5" color="text.primary" sx={{ fontWeight: 600 }}>
+                                    {currentMilestone.title}
+                                </Typography>
+                                <Typography variant="body1" color="text.secondary" sx={{ mt: 1, maxWidth: '500px', mx: 'auto' }}>
+                                    {currentMilestone.description}
+                                </Typography>
+                            </motion.div>
+                        </AnimatePresence>
+                    </Box>
+                </Box>
+            </Container>
+        </Box>
+    );
+};
+
 
 const BlogSection = () => {
+    const [blogPosts, setBlogPosts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const getCategoryColor = (category) => {
+        const colors = {
+            'Giấc ngủ': 'primary',
+            'Dinh dưỡng': 'secondary',
+            'Phát triển': 'success',
+            'Sức khỏe': 'warning',
+            'Ăn dặm': 'info',
+            'Tâm lý': 'error',
+        };
+        return colors[category] || 'primary';
+    };
+    useEffect(() => {
+        const fetchBlogs = async () => {
+            try {
+                const response = await axios.get('blog');
+                setBlogPosts(response.data.blogs);
+                setError(null);
+            } catch (err) {
+                setError('Không thể tải danh sách bài viết. Vui lòng thử lại sau.');
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchBlogs();
+    }, []);
+    if (loading) {
+        return (
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 10 }}>
+                <CircularProgress />
+            </Box>
+        );
+    }
+
+    if (error) {
+        return (
+            <Container maxWidth="lg" sx={{ py: 10 }}>
+                <Alert severity="error">{error}</Alert>
+            </Container>
+        );
+    }
+
     return (
         <MotionBox sx={{ py: 10, overflow: 'hidden' }} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={sectionVariants}>
             <Container maxWidth="lg">
@@ -520,97 +730,61 @@ const BlogSection = () => {
                 <Swiper
                     modules={[Pagination, Navigation, Autoplay]}
                     grabCursor={true}
-                    loop={true}
-                    autoplay={{
-                        delay: 3500,
-                        disableOnInteraction: false,
-                    }}
+                    loop={blogPosts.length > 3}
+                    autoplay={{ delay: 3500, disableOnInteraction: false }}
                     pagination={{ clickable: true }}
                     navigation={true}
                     slidesPerView={1}
                     spaceBetween={20}
                     breakpoints={{
-                        600: {
-                            slidesPerView: 2,
-                            spaceBetween: 20,
-                        },
-                        900: {
-                            slidesPerView: 3,
-                            spaceBetween: 30,
-                        },
+                        600: { slidesPerView: 2, spaceBetween: 20 },
+                        900: { slidesPerView: 3, spaceBetween: 30 },
                     }}
                     style={{ paddingBottom: '50px', paddingTop: '10px' }}
                 >
                     {blogPosts.map((post) => (
-                        <SwiperSlide key={post.id} style={{ height: 'auto' }}>
+                        <SwiperSlide key={post._id} style={{ height: 'auto' }}>
                             <Card sx={{
-                                width: '100%',
-                                height: '100%',
-                                borderRadius: '16px',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                overflow: 'hidden',
+                                width: '100%', height: '100%', borderRadius: '16px',
+                                display: 'flex', flexDirection: 'column', overflow: 'hidden',
                                 transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
                                 '&:hover': {
                                     transform: 'translateY(-8px)',
                                     boxShadow: (theme) => `0px 12px 24px ${alpha(theme.palette.primary.main, 0.25)}`,
                                 },
-                                '&:hover .blog-card-media': {
-                                    transform: 'scale(1.08)',
-                                }
+                                '&:hover .blog-card-media': { transform: 'scale(1.08)' }
                             }}>
                                 <Box sx={{ overflow: 'hidden', height: 200 }}>
                                     <CardMedia
                                         component="img"
                                         className="blog-card-media"
                                         sx={{
-                                            height: '100%',
-                                            width: '100%',
-                                            objectFit: 'cover',
+                                            height: '100%', width: '100%', objectFit: 'cover',
                                             transition: 'transform 0.4s ease-in-out',
                                         }}
-                                        image={post.image}
+                                        image={post.imageUrl || 'https://via.placeholder.com/870x870.png?text=MomUni'}
                                         alt={post.title}
                                     />
                                 </Box>
                                 <CardContent sx={{
-                                    flexGrow: 1,
-                                    p: 2.5,
-                                    display: 'flex',
-                                    flexDirection: 'column',
+                                    flexGrow: 1, p: 2.5, display: 'flex', flexDirection: 'column'
                                 }}>
-                                    <Chip label={post.category} color={post.color || "primary"} size="small" sx={{ mb: 1.5, alignSelf: 'flex-start', opacity: 0.9 }} />
+                                    <Chip label={post.category} color={getCategoryColor(post.category)} size="small" sx={{ mb: 1.5, alignSelf: 'flex-start', opacity: 0.9 }} />
                                     <Typography variant="h6" component="div" sx={{
-                                        mb: 1,
-                                        fontSize: '1.1rem',
-                                        lineHeight: 1.4,
-                                        fontWeight: 600,
-                                        color: 'text.primary',
-                                        display: '-webkit-box',
-                                        WebkitBoxOrient: 'vertical',
-                                        WebkitLineClamp: 2,
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                        minHeight: '2.8em'
+                                        mb: 1, fontSize: '1.1rem', lineHeight: 1.4, fontWeight: 600, color: 'text.primary',
+                                        display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2,
+                                        overflow: 'hidden', textOverflow: 'ellipsis', minHeight: '2.8em'
                                     }}>
                                         {post.title}
                                     </Typography>
                                     <Typography variant="body2" color="text.secondary" sx={{
-                                        mb: 2,
-                                        flexGrow: 1,
-                                        display: '-webkit-box',
-                                        WebkitBoxOrient: 'vertical',
-                                        WebkitLineClamp: 3,
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                        minHeight: '4.5em'
+                                        mb: 2, flexGrow: 1, display: '-webkit-box', WebkitBoxOrient: 'vertical',
+                                        WebkitLineClamp: 3, overflow: 'hidden', textOverflow: 'ellipsis', minHeight: '4.5em'
                                     }}>
                                         {post.excerpt || "Khám phá những thông tin hữu ích và cập nhật mới nhất về chủ đề này..."}
                                     </Typography>
                                     <Button
-                                        size="small"
-                                        variant="text"
-                                        color="primary"
+                                        size="small" variant="text" color="primary"
                                         endIcon={<ArrowForwardIos sx={{ fontSize: '0.8rem' }} />}
                                         sx={{ mt: 'auto', alignSelf: 'flex-start', fontWeight: 600, '&:hover': { bgcolor: 'transparent' } }}
                                     >
@@ -626,21 +800,33 @@ const BlogSection = () => {
     );
 };
 
+
 const FooterWithForm = () => {
-    const [formData, setFormData] = useState({ name: '', email: '', question: '' });
+    const [formData, setFormData] = useState({ name: '', email: '', phone: '', topic: '', question: '' });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
-    const handleInputChange = (e) => { setFormData(prev => ({ ...prev, [e.target.name]: e.target.value })); };
-    const handleCloseSnackbar = () => { setSnackbar(prev => ({ ...prev, open: false })); };
+
+    const handleInputChange = (e) => {
+        setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    };
+    const handleCloseSnackbar = () => {
+        setSnackbar(prev => ({ ...prev, open: false }));
+    };
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
         try {
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            setSnackbar({ open: true, message: 'Cảm ơn bạn! Chúng tôi sẽ sớm liên hệ.', severity: 'success' });
-            setFormData({ name: '', email: '', question: '' });
+            const response = await axios.post('expert-form/create', formData);
+            if (response.status === 201) {
+                setSnackbar({ open: true, message: 'Cảm ơn bạn! Chúng tôi sẽ sớm liên hệ.', severity: 'success' });
+                setFormData({ name: '', email: '', phone: '', topic: '', question: '' });
+            } else {
+                setSnackbar({ open: true, message: response.data.message || 'Có lỗi xảy ra, vui lòng thử lại.', severity: 'error' });
+            }
         } catch (err) {
-            setSnackbar({ open: true, message: 'Oops! Có lỗi xảy ra.', severity: 'error' });
+            const errorMessage = err.response?.data?.message || 'Oops! Có lỗi xảy ra khi gửi form.';
+            setSnackbar({ open: true, message: errorMessage, severity: 'error' });
+            console.error(err);
         }
         setIsSubmitting(false);
     };
@@ -655,8 +841,18 @@ const FooterWithForm = () => {
                     <Box component="form" onSubmit={handleSubmit}>
                         <Stack spacing={2.5}>
                             <Grid container spacing={2.5}>
-                                <Grid item xs={12} sm={6}><TextField fullWidth label="Tên của bạn" name="name" value={formData.name} onChange={handleInputChange} required /></Grid>
-                                <Grid item xs={12} sm={6}><TextField fullWidth label="Email" type="email" name="email" value={formData.email} onChange={handleInputChange} required /></Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField fullWidth label="Tên của bạn" name="name" value={formData.name} onChange={handleInputChange} required />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField fullWidth label="Email" type="email" name="email" value={formData.email} onChange={handleInputChange} required />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField fullWidth label="Số điện thoại" name="phone" value={formData.phone} onChange={handleInputChange} required />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField fullWidth label="Chủ đề câu hỏi" name="topic" value={formData.topic} onChange={handleInputChange} required />
+                                </Grid>
                             </Grid>
                             <TextField fullWidth label="Lời nhắn của bạn" name="question" value={formData.question} onChange={handleInputChange} required multiline rows={4} />
                             <LoadingButton type="submit" loading={isSubmitting} endIcon={<Send />} variant="contained" color="primary" size="large" sx={{ mt: 1 }}>Gửi Lời Nhắn</LoadingButton>
@@ -688,6 +884,7 @@ const FooterWithForm = () => {
     );
 };
 
+
 export default function HomePage2() {
     return (
         <ThemeProvider theme={elegantTheme}>
@@ -696,6 +893,7 @@ export default function HomePage2() {
             <main>
                 <HeroSection />
                 <FeaturesSection />
+                <MotherhoodJourneySection />
                 <BlogSection />
             </main>
             <FooterWithForm />

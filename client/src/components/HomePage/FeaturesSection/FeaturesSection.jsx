@@ -5,7 +5,6 @@ import {
     Paper, useTheme, alpha
 } from '@mui/material';
 import {
-    Menu as MenuIcon,
     FavoriteBorder,
     Restaurant,
     ChildCare,
@@ -13,15 +12,14 @@ import {
     Spa,
     School,
 } from '@mui/icons-material';
-import 'swiper/css';
-import 'swiper/css/pagination';
-import 'swiper/css/navigation';
 import { motion } from 'framer-motion';
+
 const sectionVariants = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
 };
 const MotionBox = motion(Box);
+
 export const FeaturesSection = () => {
     const theme = useTheme();
     const featuresData = [
@@ -41,65 +39,76 @@ export const FeaturesSection = () => {
             const { left, top, width, height } = cardRef.current.getBoundingClientRect();
             const x = e.clientX - left;
             const y = e.clientY - top;
+            const rotateX = (y - height / 2) / (height / 2) * -7;
+            const rotateY = (x - width / 2) / (width / 2) * 7;
 
-            const rotateX = (y - height / 2) / (height / 2) * -10;
-            const rotateY = (x - width / 2) / (width / 2) * 10;
-
-            cardRef.current.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`;
-            cardRef.current.style.transition = 'transform 0.1s linear';
+            cardRef.current.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.03, 1.03, 1.03)`;
+            cardRef.current.style.transition = 'transform 0.05s linear';
         };
 
         const handleMouseLeave = () => {
             if (!cardRef.current) return;
-            cardRef.current.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
-            cardRef.current.style.transition = 'transform 0.4s ease';
+            cardRef.current.style.transform = 'perspective(800px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+            cardRef.current.style.transition = 'transform 0.3s ease';
         };
 
         return (
             <MotionBox
                 ref={cardRef}
                 component={Paper}
-                elevation={4}
+                elevation={3}
                 onMouseMove={handleMouseMove}
                 onMouseLeave={handleMouseLeave}
                 sx={{
-                    p: 3,
+                    p: { xs: 1.5, md: 2 },
                     textAlign: 'center',
                     height: '100%',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    borderRadius: '16px',
+                    borderRadius: '12px',
                     border: '1px solid',
-                    borderColor: alpha(theme.palette.primary.main, 0.2),
-                    backgroundColor: alpha('#ffffff', 0.7),
-                    backdropFilter: 'blur(5px)',
+                    borderColor: alpha(theme.palette.primary.main, 0.15),
+                    backgroundColor: alpha('#ffffff', 0.8),
+                    backdropFilter: 'blur(4px)',
                     cursor: 'pointer',
                     willChange: 'transform',
-                    transition: 'all 0.4s ease',
+                    transition: 'all 0.3s ease',
+                    minHeight: { xs: 180, sm: 200 },
                     '&:hover .feature-icon-wrapper': {
-                        transform: 'scale(1.15)',
-                        bgcolor: alpha(theme.palette.primary.main, 0.15),
+                        transform: 'scale(1.1)',
+                        bgcolor: alpha(theme.palette.primary.main, 0.1),
                     }
                 }}
             >
                 <Box
                     className="feature-icon-wrapper"
                     sx={{
-                        width: 72, height: 72, borderRadius: '50%',
-                        bgcolor: alpha(theme.palette.primary.main, 0.08),
+                        width: { xs: 48, md: 56 },
+                        height: { xs: 48, md: 56 },
+                        borderRadius: '50%',
+                        bgcolor: alpha(theme.palette.primary.main, 0.05),
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        mb: 2.5,
-                        transition: 'transform 0.3s ease-in-out, background-color 0.3s ease-in-out',
+                        mb: 1.5,
+                        transition: 'transform 0.2s ease-in-out, background-color 0.2s ease-in-out',
                     }}
                 >
-                    {React.cloneElement(icon, { sx: { fontSize: 36, color: 'primary.main' } })}
+                    {React.cloneElement(icon, { sx: { fontSize: { xs: 24, md: 28 }, color: 'primary.main' } })}
                 </Box>
-                <Typography variant="h6" sx={{ fontSize: '1.1rem', fontWeight: 600, color: 'text.primary', mb: 0.5 }}>
+                <Typography variant="h6" sx={{
+                    fontSize: { xs: '0.875rem', md: '1rem' },
+                    fontWeight: 600,
+                    color: 'text.primary',
+                    mb: 0.5
+                }}>
                     {title}
                 </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ minHeight: '2.5em' }}>
+                <Typography variant="body2" color="text.secondary" sx={{
+                    fontSize: { xs: '0.75rem', md: '0.8rem' },
+                    minHeight: '2.5em',
+                    lineHeight: 1.4
+                }}>
                     {description}
                 </Typography>
             </MotionBox>
@@ -107,17 +116,33 @@ export const FeaturesSection = () => {
     };
 
     return (
-        <MotionBox sx={{ py: 10, backgroundColor: theme.palette.background.default }} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={sectionVariants}>
+        <MotionBox
+            sx={{ py: { xs: 6, md: 8 } }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={sectionVariants}
+        >
             <Container maxWidth="lg">
-                <Typography variant="h3" align="center" color="text.primary" gutterBottom>
+                <Typography variant="h3" align="center" color="text.primary" sx={{
+                    mb: { xs: 1, md: 2 },
+                    fontSize: { xs: '2rem', sm: '2.2rem', md: '2.5rem' }
+                }}>
                     Khám phá mọi khía cạnh
                 </Typography>
-                <Typography variant="h6" align="center" color="text.secondary" sx={{ mb: 8, fontWeight: 400, maxWidth: '600px', margin: 'auto auto 64px auto' }}>
+                <Typography variant="h6" align="center" color="text.secondary" sx={{
+                    mb: { xs: 4, md: 6 },
+                    fontWeight: 400,
+                    maxWidth: '600px',
+                    margin: 'auto',
+                    fontSize: { xs: '0.9rem', sm: '1rem', md: '1.1rem' }
+                }}>
                     Những chủ đề được quan tâm nhất, giúp mẹ tự tin và vững vàng trên mọi chặng đường.
                 </Typography>
-                <Grid container spacing={3.5} justifyContent="center">
+                <Grid container spacing={{ xs: 1.5, md: 2 }} justifyContent="center">
                     {featuresData.map((feature, index) => (
-                        <Grid item xs={12} sm={6} md={4} lg={3.5} key={index}>
+
+                        <Grid item xs={4} sm={3} md={2} key={index}>
                             <FeatureCard {...feature} />
                         </Grid>
                     ))}

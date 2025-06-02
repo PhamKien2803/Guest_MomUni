@@ -1,17 +1,15 @@
 import { useState, useEffect, useMemo } from 'react';
+import axios from 'axios';
 import {
     createTheme, ThemeProvider, CssBaseline, Typography,
     Container, Box, Grid, Link,
-    IconButton, TextField, MenuItem,
-    Paper, Stack, Divider, useTheme, alpha, Pagination, Breadcrumbs,
-    InputAdornment
+    TextField, MenuItem,
+    Paper, useTheme, alpha, Pagination, Breadcrumbs,
+    InputAdornment, CircularProgress, Alert, Chip as MuiChip
 } from '@mui/material';
 import {
-    Menu as MenuIcon,
-    Facebook, Instagram, Twitter, Send,
-    ChevronRight, Search as SearchIcon, AccessTime as TimeIcon,
-    Visibility as ViewIcon, Person as PersonIcon, Category as CategoryIcon,
-    CalendarToday as CalendarIcon, Whatshot as TrendingIcon, NewReleases as NewIcon,
+    Search as SearchIcon,
+    LocalOffer as TagIcon,
     FilterList as FilterListIcon
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
@@ -91,21 +89,6 @@ const sectionVariants = {
 };
 const MotionBox = motion(Box);
 
-const initialBlogPosts = [
-    { _id: '1', slug: 'bi-quyet-giup-be-ngu-ngon', title: 'Bí Quyết Vàng Giúp Bé Yêu Ngủ Ngon Giấc Mỗi Đêm', images: [{ url: 'https://images.unsplash.com/photo-1546015720-693a131655f4?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' }], category: 'Giấc Ngủ', author: 'Chuyên gia Nhi Khoa', authorImage: 'https://randomuser.me/api/portraits/women/1.jpg', createdAt: '2025-06-01T10:00:00Z', viewCount: 1250, excerpt: 'Giấc ngủ đủ và sâu rất quan trọng cho sự phát triển toàn diện của trẻ. Bài viết này sẽ chia sẻ những bí quyết đã được kiểm chứng...', tags: ['ngủ ngon', 'trẻ sơ sinh', 'mẹo cho mẹ'] },
-    { _id: '2', slug: 'dinh-duong-cho-me-bau', title: 'Thực Đơn Dinh Dưỡng Hoàn Hảo Cho Mẹ Bầu Từng Tam Cá Nguyệt', images: [{ url: 'https://images.unsplash.com/photo-1555412654-72a34a520934?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' }], category: 'Dinh Dưỡng Mẹ', author: 'BS. An Nhiên', authorImage: 'https://randomuser.me/api/portraits/women/2.jpg', createdAt: '2025-05-29T14:30:00Z', viewCount: 2100, excerpt: 'Chế độ ăn uống khoa học không chỉ giúp mẹ khỏe mạnh mà còn là nền tảng cho sự phát triển tối ưu của thai nhi.', tags: ['mang thai', 'dinh dưỡng', 'sức khỏe mẹ'] },
-    { _id: '3', slug: 'gan-ket-me-con', title: '10 Hoạt Động Đơn Giản Giúp Tăng Cường Gắn Kết Tình Cảm Mẹ Con', images: [{ url: 'https://images.unsplash.com/photo-1476703893627-68b1ea3815a5?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' }], category: 'Phát Triển Cảm Xúc', author: 'Tạp chí MomUni', authorImage: 'https://randomuser.me/api/portraits/lego/1.jpg', createdAt: '2025-05-28T09:15:00Z', viewCount: 1800, excerpt: 'Tình mẫu tử là thiêng liêng. Hãy cùng khám phá những cách đơn giản để vun đắp sợi dây kết nối vô hình này mỗi ngày.', tags: ['tình cảm', 'gia đình', 'kỹ năng mềm'] },
-    { _id: '4', slug: 'yoga-sau-sinh', title: 'Yoga Phục Hồi Sau Sinh: Lấy Lại Vóc Dáng Và Năng Lượng', images: [{ url: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=920&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' }], category: 'Sức Khỏe Mẹ', author: 'HLV Yoga An An', authorImage: 'https://randomuser.me/api/portraits/women/3.jpg', createdAt: '2025-05-26T11:00:00Z', viewCount: 980, excerpt: 'Các bài tập yoga nhẹ nhàng không chỉ giúp mẹ nhanh chóng phục hồi sức khỏe, cải thiện vóc dáng mà còn mang lại sự thư thái cho tâm hồn.', tags: ['yoga', 'sau sinh', 'vóc dáng'] },
-    { _id: '5', slug: 'an-dam-cho-be', title: 'Cẩm Nang Ăn Dặm Cho Bé Từ A Đến Z (6-12 Tháng)', images: [{ url: 'https://images.unsplash.com/photo-1565792911364-5431b34b5c46?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' }], category: 'Ăn Dặm', author: 'Chuyên gia Dinh Dưỡng Nhi', authorImage: 'https://randomuser.me/api/portraits/men/1.jpg', createdAt: '2025-05-24T16:00:00Z', viewCount: 3200, excerpt: 'Ăn dặm là một cột mốc quan trọng. Bài viết cung cấp thông tin chi tiết về các phương pháp, thực đơn và lưu ý khi cho bé ăn dặm.', tags: ['ăn dặm', 'thực đơn', 'dinh dưỡng bé'] },
-    { _id: '6', slug: 'khung-hoang-tuoi-len-2', title: 'Vượt Qua "Khủng Hoảng Tuổi Lên 2": Bí Quyết Cho Cha Mẹ', images: [{ url: 'https://images.unsplash.com/photo-1519682577862-22b62b24e493?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' }], category: 'Tâm Lý Trẻ', author: 'ThS. Ánh Nguyệt', authorImage: 'https://randomuser.me/api/portraits/women/4.jpg', createdAt: '2025-05-22T08:00:00Z', viewCount: 1500, excerpt: 'Tuổi lên 2 đầy thách thức nhưng cũng thật đáng yêu. Hiểu đúng để đồng hành cùng con vượt qua giai đoạn này một cách nhẹ nhàng.', tags: ['khủng hoảng', 'dạy con', 'tâm lý'] },
-    { _id: '7', slug: 'cham-soc-tre-so-sinh', title: 'Những Điều Cần Biết Khi Chăm Sóc Trẻ Sơ Sinh Tại Nhà', images: [{ url: 'https://images.unsplash.com/photo-1515488042361-ee00e0ddd434?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' }], category: 'Chăm Sóc Bé', author: 'Điều dưỡng Nhi Khoa', authorImage: 'https://randomuser.me/api/portraits/women/5.jpg', createdAt: '2025-05-20T09:00:00Z', viewCount: 850, excerpt: 'Hướng dẫn chi tiết từ A-Z về cách tắm, cho bé bú, theo dõi sức khỏe và tạo môi trường an toàn cho trẻ sơ sinh.', tags: ['trẻ sơ sinh', 'chăm sóc', 'an toàn'] },
-    { _id: '8', slug: 'tro-choi-phat-trien-tri-nao', title: 'Top 5 Trò Chơi Kích Thích Phát Triển Trí Não Cho Bé 0-1 Tuổi', images: [{ url: 'https://images.unsplash.com/photo-1516642304010-380907006699?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' }], category: 'Phát Triển Trí Tuệ', author: 'Cô Giáo Mầm Non', authorImage: 'https://randomuser.me/api/portraits/women/6.jpg', createdAt: '2025-05-18T13:00:00Z', viewCount: 1100, excerpt: 'Chơi mà học, học mà chơi! Khám phá những trò chơi đơn giản giúp bé phát triển tư duy, nhận thức và các giác quan.', tags: ['trò chơi', 'trí não', 'giáo dục sớm'] },
-];
-
-const allCategories = ["Tất cả", ...new Set(initialBlogPosts.map(post => post.category).sort())];
-
-// --- COMPONENTS ---
-
 export default function BlogPageEvaStyle() {
     const theme = useTheme();
     const [blogPostsData, setBlogPostsData] = useState([]);
@@ -113,43 +96,107 @@ export default function BlogPageEvaStyle() {
     const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [searchQuery, setSearchQuery] = useState("");
-    const [selectedCategory, setSelectedCategory] = useState("Tất cả");
+    const [selectedTag, setSelectedTag] = useState("Tất cả");
 
     const postsPerPage = 6;
+    const DEFAULT_AUTHOR_NAME = "MomUni Team";
+    const DEFAULT_AUTHOR_IMAGE = "/assets/images/momuni-default-avatar.png";
+    const DEFAULT_CATEGORY_NAME = "Chung";
+    const DEFAULT_POST_IMAGE_URL = 'https://placehold.co/600x400/E5A3B3/FFF7F5?text=MomUni';
 
     useEffect(() => {
-        setLoading(true);
-        setTimeout(() => {
-            setBlogPostsData(initialBlogPosts);
-            setLoading(false);
-        }, 500);
+        const fetchAllBlogs = async () => {
+            setLoading(true);
+            setError(null);
+            try {
+                const response = await axios.get('blog');
+                if (response.data && Array.isArray(response.data.blogs)) {
+                    const processedBlogs = response.data.blogs.map(post => ({
+                        ...post,
+                        excerpt: post.summary || post.excerpt || "Nội dung đang được cập nhật...",
+                        author: DEFAULT_AUTHOR_NAME,
+                        authorImage: DEFAULT_AUTHOR_IMAGE,
+                        category: (Array.isArray(post.tags) && post.tags.length > 0) ? post.tags[0] : DEFAULT_CATEGORY_NAME,
+                        tags: Array.isArray(post.tags) ? post.tags : [],
+                        averageRating: typeof post.averageRating === 'number' ? post.averageRating : 0,
+                        images: (post.images && post.images.length > 0 && post.images[0].url)
+                            ? post.images
+                            : [{ url: DEFAULT_POST_IMAGE_URL, caption: "Ảnh mặc định" }]
+                    }));
+                    setBlogPostsData(processedBlogs);
+                } else {
+                    setBlogPostsData([]);
+                }
+            } catch (err) {
+                console.error("Lỗi khi tải danh sách blog:", err);
+                setError(err.response?.data?.message || "Không thể tải danh sách bài viết.");
+                if (err.response && err.response.status === 404) {
+                    setError("Hiện tại chưa có bài viết nào để hiển thị.");
+                }
+                setBlogPostsData([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchAllBlogs();
     }, []);
+
+    const allTags = useMemo(() => {
+        if (!blogPostsData || blogPostsData.length === 0) return ["Tất cả"];
+        const tagsSet = new Set();
+        blogPostsData.forEach(post => {
+            if (Array.isArray(post.tags)) {
+                post.tags.forEach(tag => tagsSet.add(tag));
+            }
+        });
+        return ["Tất cả", ...Array.from(tagsSet).sort()];
+    }, [blogPostsData]);
+
+    const latestPostsForCarousel = useMemo(() => {
+        if (!blogPostsData || blogPostsData.length === 0) return [];
+        return [...blogPostsData].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    }, [blogPostsData]);
 
     const filteredAndSortedPosts = useMemo(() => {
         return blogPostsData
             .filter(post =>
-                selectedCategory === "Tất cả" || post.category === selectedCategory
+                selectedTag === "Tất cả" || (Array.isArray(post.tags) && post.tags.includes(selectedTag))
             )
             .filter(post =>
                 post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 (post.excerpt && post.excerpt.toLowerCase().includes(searchQuery.toLowerCase()))
-            )
-            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    }, [blogPostsData, selectedCategory, searchQuery]);
+            );
+    }, [blogPostsData, selectedTag, searchQuery]);
 
     const totalPages = Math.ceil(filteredAndSortedPosts.length / postsPerPage);
     const currentDisplayPosts = filteredAndSortedPosts.slice((currentPage - 1) * postsPerPage, currentPage * postsPerPage);
 
-    const latestPostsForCarousel = useMemo(() => [...initialBlogPosts].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)), []);
-
-
-    if (loading) return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}><Typography variant="h5">Đang tải trang Blog...</Typography></Box>;
-    if (error) return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}><Typography color="error">Lỗi tải dữ liệu: {error}</Typography></Box>;
+    if (loading) {
+        return (
+            <ThemeProvider theme={elegantTheme}>
+                <CssBaseline />
+                <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
+                    <CircularProgress color="primary" sx={{ mb: 2 }} />
+                    <Typography variant="h6" color="text.secondary">Đang tải danh sách bài viết...</Typography>
+                </Box>
+            </ThemeProvider>
+        );
+    }
+    if (error) {
+        return (
+            <ThemeProvider theme={elegantTheme}>
+                <CssBaseline />
+                <Container sx={{ py: 4, textAlign: 'center' }}>
+                    <Alert severity="error" sx={{ justifyContent: 'center' }}>Lỗi: {error}</Alert>
+                </Container>
+            </ThemeProvider>
+        );
+    }
 
     return (
         <ThemeProvider theme={elegantTheme}>
             <CssBaseline />
-            <Container maxWidth="xl" sx={{ mt: 4, mb: 0 }}> {/* Đã thay đổi maxWidth="lg" thành "xl" */}
+            <Container maxWidth="xl" sx={{ mt: 4, mb: 0 }}>
                 <MotionBox initial="hidden" animate="visible" variants={sectionVariants}>
                     <Breadcrumbs aria-label="breadcrumb" sx={{ mb: 2, fontSize: '0.9rem' }}>
                         <Link underline="hover" color="inherit" href="/">Trang chủ</Link>
@@ -159,6 +206,7 @@ export default function BlogPageEvaStyle() {
                         MomUni Blog
                     </Typography>
                 </MotionBox>
+
                 <MotionBox
                     component={Paper}
                     elevation={0}
@@ -167,65 +215,49 @@ export default function BlogPageEvaStyle() {
                     animate="visible"
                     transition={{ delay: 0.1 }}
                     sx={{
-                        p: 2,
-                        mb: 5,
-                        borderRadius: '16px',
+                        p: 2, mb: 5, borderRadius: '16px',
                         border: `1px solid ${alpha(theme.palette.primary.main, 0.15)}`,
                         backgroundColor: alpha(theme.palette.background.paper, 0.8),
                         backdropFilter: 'blur(5px)'
                     }}
                 >
                     <Grid container spacing={2} alignItems="center">
-                        <Grid item xs={12} md={5} lg={6}>
+                        <Grid item xs={12} md={6}>
                             <TextField
-                                fullWidth
-                                variant="outlined"
-                                size="small"
+                                fullWidth variant="outlined" size="small"
                                 placeholder="Tìm kiếm bài viết..."
                                 value={searchQuery}
                                 onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
                                 InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <SearchIcon color="action" />
-                                        </InputAdornment>
-                                    ),
+                                    startAdornment: (<InputAdornment position="start"><SearchIcon color="action" /></InputAdornment>),
                                     sx: { borderRadius: '12px', backgroundColor: alpha(theme.palette.common.white, 0.5) }
                                 }}
                             />
                         </Grid>
-                        <Grid item xs={12} md={7} lg={6}>
+                        <Grid item xs={12} md={6}>
                             <TextField
-                                select
-                                fullWidth
-                                size="small"
-                                value={selectedCategory}
-                                onChange={(e) => { setSelectedCategory(e.target.value); setCurrentPage(1); }}
+                                select fullWidth size="small"
+                                value={selectedTag}
+                                onChange={(e) => { setSelectedTag(e.target.value); setCurrentPage(1); }}
                                 sx={{
-                                    '& .MuiOutlinedInput-root': {
-                                        borderRadius: '12px',
-                                        backgroundColor: alpha(theme.palette.common.white, 0.5)
-                                    },
-                                    '& .MuiSelect-select': {
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                    }
+                                    '& .MuiOutlinedInput-root': { borderRadius: '12px', backgroundColor: alpha(theme.palette.common.white, 0.5) },
+                                    '& .MuiSelect-select': { display: 'flex', alignItems: 'center' }
                                 }}
-                                SelectProps={{
-                                    MenuProps: {
-                                        sx: {
-                                            '& .MuiPaper-root': {
-                                                borderRadius: '12px',
-                                                mt: 1
-                                            }
-                                        }
+                                SelectProps={{ MenuProps: { sx: { '& .MuiPaper-root': { borderRadius: '12px', mt: 1 } } } }}
+                                displayEmpty
+                                renderValue={(selected) => {
+                                    if (selected === "Tất cả") {
+                                        return <Box sx={{ display: 'flex', alignItems: 'center', color: 'text.secondary' }}><TagIcon sx={{ mr: 1, fontSize: '1.2rem' }} />Lọc theo Tags</Box>;
                                     }
+                                    return selected;
                                 }}
                             >
-                                {allCategories.map((category) => (
-                                    <MenuItem key={category} value={category}>
-                                        {category === "Tất cả" && <FilterListIcon sx={{ mr: 1, fontSize: '1.2rem', color: 'text.secondary' }} />}
-                                        {category}
+                                {allTags.map((tag) => (
+                                    <MenuItem key={tag} value={tag}>
+                                        {tag === "Tất cả" ?
+                                            <Box sx={{ display: 'flex', alignItems: 'center' }}><FilterListIcon sx={{ mr: 1, fontSize: '1.2rem', color: 'text.secondary' }} />Tất cả Tags</Box>
+                                            : tag
+                                        }
                                     </MenuItem>
                                 ))}
                             </TextField>
@@ -234,23 +266,23 @@ export default function BlogPageEvaStyle() {
                 </MotionBox>
 
                 <Grid container spacing={4}>
-                    <Grid item xs={12} md={6}>
+                    <Grid item xs={12}>
                         <MotionBox initial="hidden" animate="visible" variants={sectionVariants} transition={{ delay: 0.1 }}>
                             <Typography variant="h2" gutterBottom sx={{ mb: 3 }}>
-                                Tất cả bài viết
+                                {selectedTag === "Tất cả" ? "Tất cả bài viết" : `Bài viết với tag "${selectedTag}"`}
                             </Typography>
                             <Grid container spacing={3}>
                                 {currentDisplayPosts.length > 0 ? (
                                     currentDisplayPosts.map((post) => (
-                                        <Grid item xs={12} sm={6} key={post._id}>
-                                            <BlogCard post={post} small={true} />
+                                        <Grid item xs={12} sm={6} md={4} key={post._id || post.slug}>
+                                            <BlogCard post={post} small={false} />
                                         </Grid>
                                     ))
                                 ) : (
                                     <Grid item xs={12}>
                                         <Paper sx={{ p: 4, textAlign: 'center', mt: 2, backgroundColor: alpha(theme.palette.background.default, 0.7) }}>
-                                            <Typography variant="h6">Không tìm thấy bài viết nào.</Typography>
-                                            <Typography color="text.secondary">Vui lòng thử lại với từ khóa hoặc danh mục khác.</Typography>
+                                            <Typography variant="h6">Không tìm thấy bài viết nào phù hợp.</Typography>
+                                            <Typography color="text.secondary">Vui lòng thử lại với từ khóa hoặc bộ lọc khác.</Typography>
                                         </Paper>
                                     </Grid>
                                 )}
@@ -270,8 +302,6 @@ export default function BlogPageEvaStyle() {
                             )}
                         </MotionBox>
                     </Grid>
-
-
                 </Grid>
 
                 {latestPostsForCarousel.length > 0 && (
@@ -281,25 +311,21 @@ export default function BlogPageEvaStyle() {
                         </Typography>
                         <Swiper
                             modules={[Navigation, SwiperPagination, SwiperAutoplay]}
-                            spaceBetween={24}
-                            slidesPerView={1}
-                            loop={true}
-                            autoplay={{
-                                delay: 4000,
-                                disableOnInteraction: false,
-                            }}
+                            spaceBetween={24} slidesPerView={1}
+                            loop={latestPostsForCarousel.length >= 5}
+                            autoplay={{ delay: 4000, disableOnInteraction: false }}
                             pagination={{ clickable: true, el: '.swiper-pagination-latest-posts' }}
                             navigation={true}
                             breakpoints={{
-                                600: { slidesPerView: 2, spaceBetween: 20 },
-                                900: { slidesPerView: 3, spaceBetween: 24 },
-                                1200: { slidesPerView: 4, spaceBetween: 24 },
-                                1536: { slidesPerView: 5, spaceBetween: 24 },
+                                600: { slidesPerView: 2, spaceBetween: 20, loop: latestPostsForCarousel.length >= 3 },
+                                900: { slidesPerView: 3, spaceBetween: 24, loop: latestPostsForCarousel.length >= 4 },
+                                1200: { slidesPerView: 4, spaceBetween: 24, loop: latestPostsForCarousel.length >= 5 },
+                                1536: { slidesPerView: 5, spaceBetween: 24, loop: latestPostsForCarousel.length >= 6 },
                             }}
                             style={{ paddingBottom: '60px', paddingTop: '10px' }}
                         >
                             {latestPostsForCarousel.map((post) => (
-                                <SwiperSlide key={`carousel-${post._id}`} style={{ height: 'auto' }}>
+                                <SwiperSlide key={`carousel-${post._id || post.slug}`} style={{ height: 'auto' }}>
                                     <BlogCard post={post} small={false} />
                                 </SwiperSlide>
                             ))}

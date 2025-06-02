@@ -7,22 +7,21 @@ import {
     Chip, TextField, Alert,
     Paper, Stack, Divider, useTheme, alpha, Pagination, Breadcrumbs,
     List, ListItem, ListItemText, ListItemAvatar,
-    Avatar, Rating, CircularProgress, Card, CardContent, CardActions // Thêm Card, CardContent, CardActions
+    Avatar, Rating, CircularProgress, Card, CardContent, CardActions
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import {
-    Facebook, Instagram, Twitter,
-    Search as SearchIcon, AccessTime as TimeIcon,
-    Visibility as ViewIcon, Person as PersonIcon, Category as CategoryIcon,
     CalendarToday as CalendarTodayIcon,
-    Whatshot as TrendingIcon, NewReleases as NewIcon,
-    FilterList as FilterListIcon, Send as SendIcon,
     Star as StarIcon,
     Comment as CommentIcon,
-    ShoppingCart as ShoppingCartIcon, // Icon cho affiliate links
-    Launch as LaunchIcon // Icon cho link ngoài
+    ShoppingCart as ShoppingCartIcon,
+    Launch as LaunchIcon,
+    PlayCircleOutline as PlayCircleOutlineIcon,
+    Visibility as VisibilityIcon
 } from '@mui/icons-material';
+import SendIcon from '@mui/icons-material/Send';
 import { motion } from 'framer-motion';
+import WaitingForContentPage from '../../components/404/WaitingForContentPage';
 
 const paletteConfig = {
     primary: { main: '#E5A3B3', light: '#F8C8D4', dark: '#BF8A9B' },
@@ -42,7 +41,7 @@ const elegantTheme = createTheme({
         h5: { fontFamily: '"Lora", serif', fontWeight: 600, fontSize: '1.2rem', color: '#4E342E' },
         h6: { fontWeight: 700, fontSize: '1.1rem', color: paletteConfig.text.primary },
         subtitle1: { fontSize: '1rem', lineHeight: 1.6, fontWeight: 400, color: paletteConfig.text.secondary },
-        body1: { fontSize: '1rem', lineHeight: 1.8, color: paletteConfig.text.primary },
+        body1: { fontSize: '1rem', lineHeight: 1.8, color: paletteConfig.text.primary, wordBreak: 'break-word', overflowWrap: 'break-word' },
         body2: { fontSize: '0.9rem', lineHeight: 1.6, color: paletteConfig.text.secondary },
         caption: { fontSize: '0.875rem', color: alpha(paletteConfig.text.secondary, 0.9) }
     },
@@ -113,9 +112,32 @@ const MotionBox = motion(Box);
 const MotionPaper = motion(Paper);
 const MotionCard = motion(Card);
 
-
 const DEFAULT_AUTHOR_NAME = "MomUni Team";
 const DEFAULT_AUTHOR_IMAGE = "/assets/images/momuni-default-avatar.png";
+const DEFAULT_POST_IMAGE_URL = 'https://placehold.co/1200x550/E5A3B3/FFF7F5?text=MomUni+Blog';
+
+const getYouTubeEmbedUrl = (url) => {
+    if (!url) return null;
+    let videoId = null;
+    try {
+        const urlObj = new URL(url);
+        if (urlObj.hostname === 'www.youtube.com' || urlObj.hostname === 'youtube.com') {
+            if (urlObj.pathname.includes('watch')) {
+                videoId = urlObj.searchParams.get('v');
+            } else if (urlObj.pathname.includes('embed')) {
+                videoId = urlObj.pathname.split('/').pop();
+            }
+        } else if (urlObj.hostname === 'youtu.be') {
+            videoId = urlObj.pathname.slice(1);
+        }
+        return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+    } catch (e) {
+        if (url.length === 11 && !url.includes('/')) {
+            return `https://www.youtube.com/embed/${url}`;
+        }
+        return null;
+    }
+};
 
 export default function BlogDetailMUI() {
     const theme = useTheme();
@@ -151,49 +173,32 @@ export default function BlogDetailMUI() {
                 setCurrentBlogRating(newAvgRating);
                 setBlog(prevBlog => prevBlog ? { ...prevBlog, averageRating: newAvgRating } : null);
             }
-        } catch (ratingError) {
-            console.error("Lỗi khi lấy rating cho blog:", ratingError);
-        }
+        } catch (err) { console.error("Lỗi khi lấy rating cho blog:", err); }
     }, []);
 
     const fetchComments = useCallback(async (blogId, page = 1) => {
         if (!blogId) return;
         try {
-            const commentsResponse = await axios.get(`comments?blogId=${blogId}&page=${page}&limit=${commentsPerPage}`);
-            if (commentsResponse.data && Array.isArray(commentsResponse.data.comments)) {
-                setComments(commentsResponse.data.comments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
-                if (commentsResponse.data.pagination) {
-                    setTotalCommentPages(commentsResponse.data.pagination.totalPages || 1);
-                    setCommentPage(commentsResponse.data.pagination.page || 1);
+            const res = await axios.get(`comments?blogId=${blogId}&page=${page}&limit=${commentsPerPage}`);
+            if (res.data && Array.isArray(res.data.comments)) {
+                setComments(res.data.comments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
+                if (res.data.pagination) {
+                    setTotalCommentPages(res.data.pagination.totalPages || 1);
+                    setCommentPage(res.data.pagination.page || 1);
                 }
             }
-        } catch (commentErr) {
-            console.error("Lỗi khi lấy comments:", commentErr);
-            setCommentError("Không thể tải bình luận.");
-        }
+        } catch (err) { console.error("Lỗi khi lấy comments:", err); setCommentError("Không thể tải bình luận."); }
     }, [commentsPerPage]);
 
+    // Effect for fetching the main blog content
     useEffect(() => {
         const fetchBlogDetail = async () => {
-            if (!slug) {
-                setError("Không tìm thấy slug bài viết.");
-                setLoading(false);
-                return;
-            }
-            setLoading(true);
-            setError(null);
-            setToc([]);
-            setComments([]);
-
+            if (!slug) { setError("Không tìm thấy slug bài viết."); setLoading(false); return; }
+            setLoading(true); setError(null); setToc([]); setComments([]);
             try {
                 const response = await axios.get(`blog/${slug}`);
                 const fetchedBlog = response.data.blog;
-
-                if (!fetchedBlog) {
-                    setError("Không tìm thấy bài viết.");
-                    setLoading(false);
-                    return;
-                }
+                if (!fetchedBlog) { setError("Không tìm thấy bài viết."); setLoading(false); return; }
 
                 const blogData = {
                     ...fetchedBlog,
@@ -201,14 +206,13 @@ export default function BlogDetailMUI() {
                     authorImage: fetchedBlog.authorId?.profileImageUrl || DEFAULT_AUTHOR_IMAGE,
                     averageRating: typeof fetchedBlog.averageRating === 'number' ? parseFloat(fetchedBlog.averageRating.toFixed(1)) : 0,
                     commentCount: typeof fetchedBlog.commentCount === 'number' ? fetchedBlog.commentCount : 0,
-                    images: (fetchedBlog.images && fetchedBlog.images.length > 0 && fetchedBlog.images[0].url)
+                    images: (Array.isArray(fetchedBlog.images) && fetchedBlog.images.length > 0 && fetchedBlog.images[0].url)
                         ? fetchedBlog.images
-                        : [{ url: 'https://placehold.co/1200x550/E5A3B3/FFF7F5?text=MomUni+Blog', caption: "Ảnh minh họa" }],
+                        : [],
+                    video: fetchedBlog.video || null,
                     affiliateLinks: Array.isArray(fetchedBlog.affiliateLinks) ? fetchedBlog.affiliateLinks : []
                 };
-
                 setCurrentBlogRating(blogData.averageRating);
-
                 if (blogData.content) {
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(blogData.content, "text/html");
@@ -223,11 +227,6 @@ export default function BlogDetailMUI() {
                     blogData.contentWithIds = "<p>Nội dung bài viết hiện chưa có.</p>";
                 }
                 setBlog(blogData);
-
-                if (blogData._id) {
-                    fetchComments(blogData._id, 1);
-                }
-
             } catch (err) {
                 console.error("Lỗi khi tải bài viết chi tiết:", err);
                 setError(err.response?.data?.message || "Lỗi tải dữ liệu bài viết.");
@@ -236,68 +235,46 @@ export default function BlogDetailMUI() {
             }
         };
         fetchBlogDetail();
-    }, [slug, fetchComments, fetchBlogRatings]);
+    }, [slug, fetchBlogRatings]);
+
+    // Effect for fetching comments, triggered by blog load or page change
+    useEffect(() => {
+        if (blog?._id) {
+            fetchComments(blog._id, commentPage);
+        }
+    }, [blog?._id, commentPage, fetchComments]);
+
 
     const handleCommentSubmit = async (e) => {
         e.preventDefault();
-        setCommentError("");
-        setCommentSuccess("");
-        if (!newComment.trim() || !commenterName.trim()) {
-            setCommentError("Vui lòng nhập tên và nội dung bình luận.");
-            return;
-        }
-        if (!blog || !blog._id) {
-            setCommentError("Không tìm thấy thông tin bài viết để bình luận.");
-            return;
-        }
+        setCommentError(""); setCommentSuccess("");
+        if (!newComment.trim() || !commenterName.trim()) { setCommentError("Vui lòng nhập tên và nội dung bình luận."); return; }
+        if (!blog || !blog._id) { setCommentError("Không tìm thấy thông tin bài viết để bình luận."); return; }
         setIsSubmittingComment(true);
-
         try {
-            const response = await axios.post('comments/user-comment', {
-                blogId: blog._id,
-                name: commenterName,
-                content: newComment
-            });
+            const response = await axios.post('comments/user-comment', { blogId: blog._id, name: commenterName, content: newComment });
             if (response.data && response.data.comment) {
-                await fetchComments(blog._id, 1);
+                await fetchComments(blog._id, 1); // Refetch comments for the first page
                 setBlog(prev => prev ? ({ ...prev, commentCount: (prev.commentCount || 0) + 1 }) : null);
-                setNewComment("");
-                setCommenterName("");
+                setNewComment(""); setCommenterName("");
                 setCommentSuccess("Bình luận của bạn đã được gửi thành công!");
             }
         } catch (err) {
             console.error("Lỗi khi gửi bình luận:", err);
             setCommentError(err.response?.data?.message || "Gửi bình luận thất bại.");
-        } finally {
-            setIsSubmittingComment(false);
-        }
+        } finally { setIsSubmittingComment(false); }
     };
 
     const handleRatingSubmit = async () => {
-        setRatingError("");
-        setRatingSuccess("");
-        if (userRating === 0) {
-            setRatingError("Vui lòng chọn số sao để đánh giá.");
-            return;
-        }
-        if (ratingSubmitted) {
-            setRatingError("Bạn đã đánh giá bài viết này rồi.");
-            return;
-        }
-        if (!blog || !blog._id) {
-            setRatingError("Không tìm thấy thông tin bài viết để đánh giá.");
-            return;
-        }
-
+        setRatingError(""); setRatingSuccess("");
+        if (userRating === 0) { setRatingError("Vui lòng chọn số sao để đánh giá."); return; }
+        if (ratingSubmitted) { setRatingError("Bạn đã đánh giá bài viết này rồi."); return; }
+        if (!blog || !blog._id) { setRatingError("Không tìm thấy thông tin bài viết để đánh giá."); return; }
         try {
-            await axios.post('ratings/user-rating', {
-                blogId: blog._id,
-                rating: userRating
-            });
+            await axios.post('ratings/user-rating', { blogId: blog._id, rating: userRating });
             setRatingSubmitted(true);
             await fetchBlogRatings(blog._id);
             setRatingSuccess("Cảm ơn bạn đã đánh giá!");
-
         } catch (err) {
             console.error("Lỗi khi gửi rating:", err);
             setRatingError(err.response?.data?.message || "Gửi đánh giá thất bại.");
@@ -305,15 +282,21 @@ export default function BlogDetailMUI() {
         }
     };
 
-    const handleAffiliateLinkClick = async (linkId) => {
-        // Chỗ này bạn có thể thêm logic gọi API để ghi nhận lượt click nếu cần
-        // Ví dụ: await axios.post(`/api/affiliate-links/${linkId}/click`);
-        console.log(`Affiliate link clicked: ${linkId}`);
+    const handleAffiliateLinkClick = async (linkUrl, linkId) => {
+        console.log(`Affiliate link clicked: ${linkUrl}, ID (if available): ${linkId}`);
     };
 
-
     if (loading) return <Container sx={{ py: 5, textAlign: 'center' }}><CircularProgress /><Typography variant="h6" sx={{ mt: 2 }}>Đang tải bài viết...</Typography></Container>;
-    if (error || !blog) return <Container sx={{ py: 5, textAlign: 'center' }}><Alert severity="error">{error || "Không tìm thấy bài viết."}</Alert></Container>;
+    if (error || !blog) {
+        return (
+            <ThemeProvider theme={elegantTheme}>
+                <CssBaseline />
+                <WaitingForContentPage />
+            </ThemeProvider>
+        );
+    }
+    const coverImage = blog.images && blog.images.length > 0 ? blog.images[0] : { url: DEFAULT_POST_IMAGE_URL, caption: "Ảnh minh họa" };
+    const embedVideoUrl = blog.video?.url ? getYouTubeEmbedUrl(blog.video.url) : null;
 
     return (
         <ThemeProvider theme={elegantTheme}>
@@ -322,42 +305,73 @@ export default function BlogDetailMUI() {
                 <Breadcrumbs aria-label="breadcrumb" sx={{ mb: 3, fontSize: '0.9rem' }}>
                     <Link component={RouterLink} underline="hover" color="inherit" to="/">Trang chủ</Link>
                     <Link component={RouterLink} underline="hover" color="inherit" to="/blog">Blog</Link>
-                    <Typography color="text.primary" sx={{ fontWeight: 500 }}>{blog.title || "Chi tiết bài viết"}</Typography>
+                    <Typography color="text.primary" sx={{ fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '300px' }}>
+                        {blog.title || "Chi tiết bài viết"}
+                    </Typography>
                 </Breadcrumbs>
 
                 <Grid container spacing={5}>
                     <Grid item xs={12} md={8}>
                         <MotionPaper
                             elevation={0}
-                            sx={{ border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`, p: { xs: 2.5, md: 4 } }}
+                            sx={{ border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`, p: { xs: 2, sm: 3, md: 4 } }}
                             variants={sectionVariants} initial="hidden" animate="visible"
                         >
                             <Typography variant="h1" component="h1" gutterBottom>
                                 {blog.title}
                             </Typography>
 
-                            <Stack direction="row" spacing={1.5} sx={{ my: 3, color: 'text.secondary', alignItems: 'center', flexWrap: 'wrap' }}>
+                            <Stack direction="row" spacing={1.5} sx={{ my: 3, color: 'text.secondary', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
                                 <Stack direction="row" alignItems="center" spacing={0.5}><Avatar src={blog.authorImage} sx={{ width: 28, height: 28, fontSize: '0.8rem' }}>{blog.author?.[0]}</Avatar> <Typography variant="caption" sx={{ fontWeight: 600 }}>{blog.author}</Typography></Stack>
                                 <Stack direction="row" alignItems="center" spacing={0.5}><CalendarTodayIcon sx={{ fontSize: '1rem' }} /> <Typography variant="caption">{new Date(blog.createdAt).toLocaleDateString("vi-VN", { day: '2-digit', month: '2-digit', year: 'numeric' })}</Typography></Stack>
+                                <Stack direction="row" alignItems="center" spacing={0.5}><VisibilityIcon sx={{ fontSize: '1rem' }} /> <Typography variant="caption">{blog.viewCount || 0} lượt xem</Typography></Stack>
                                 <Stack direction="row" alignItems="center" spacing={0.5}><CommentIcon sx={{ fontSize: '1rem' }} /> <Typography variant="caption">{blog.commentCount || comments.length} bình luận</Typography></Stack>
                                 <Stack direction="row" alignItems="center" spacing={0.5}><StarIcon sx={{ fontSize: '1.1rem', color: 'warning.main' }} /> <Typography variant="caption" sx={{ fontWeight: 500 }}>{currentBlogRating.toFixed(1)}/5</Typography></Stack>
                             </Stack>
 
-                            {blog.images && blog.images.length > 0 && (
+                            {coverImage.url !== DEFAULT_POST_IMAGE_URL && (
                                 <Box sx={{ mb: 3, borderRadius: '12px', overflow: 'hidden', boxShadow: `0 8px 20px ${alpha(theme.palette.primary.main, 0.15)}` }}>
-                                    <CardMedia component="img" image={blog.images[0].url} alt={blog.images[0].caption || blog.title} sx={{ width: '100%', maxHeight: '550px', objectFit: 'cover' }} />
+                                    <CardMedia component="img" image={coverImage.url} alt={coverImage.caption || blog.title} sx={{ width: '100%', maxHeight: '550px', objectFit: 'cover' }} />
+                                    {coverImage.caption && <Typography variant="caption" component="p" sx={{ textAlign: 'center', p: 1, backgroundColor: alpha(theme.palette.common.black, 0.03) }}>{coverImage.caption}</Typography>}
                                 </Box>
                             )}
+
+                            <Typography variant="subtitle1" sx={{ fontStyle: 'italic', color: 'text.secondary', mb: 3, borderLeft: `4px solid ${theme.palette.primary.main}`, pl: 2 }}>
+                                {blog.summary || blog.excerpt}
+                            </Typography>
+
 
                             <Box className="blog-post-content" dangerouslySetInnerHTML={{ __html: blog.contentWithIds || blog.content || "" }} sx={{
                                 '& h2': { ...elegantTheme.typography.h2, color: elegantTheme.palette.primary.dark },
                                 '& h3': { ...elegantTheme.typography.h3, color: alpha(elegantTheme.palette.text.primary, 0.85) },
-                                '& p': { ...elegantTheme.typography.body1, mb: 2 },
-                                '& a': { color: 'secondary.main', textDecoration: 'underline', '&:hover': { color: 'secondary.dark' } },
-                                '& img': { maxWidth: '100%', height: 'auto', borderRadius: '12px', display: 'block', my: 3, boxShadow: 3 },
-                                '& ul, & ol': { pl: 3, my: 2 }, '& li': { mb: 1, lineHeight: 1.7, color: 'text.secondary' },
-                                '& strong': { fontWeight: 600, color: 'text.primary' }
+                                '& p': { ...elegantTheme.typography.body1, mb: 2, wordBreak: 'break-word', overflowWrap: 'break-word' },
+                                '& a': { color: 'secondary.main', textDecoration: 'underline', '&:hover': { color: 'secondary.dark' }, wordBreak: 'break-all' },
+                                '& img': { maxWidth: '100%', height: 'auto', borderRadius: '12px', display: 'block', my: 3, boxShadow: `0 4px 12px ${alpha(theme.palette.common.black, 0.1)}` },
+                                '& figure': { m: 0, my: 3 }, '& figcaption': { textAlign: 'center', color: 'text.secondary', fontSize: '0.8rem', mt: 0.5 },
+                                '& ul, & ol': { pl: 3, my: 2, wordBreak: 'break-word', overflowWrap: 'break-word' }, '& li': { mb: 1, lineHeight: 1.7, color: 'text.secondary' },
+                                '& strong': { fontWeight: 600, color: 'text.primary' },
+                                '& blockquote': { borderLeft: `4px solid ${theme.palette.primary.light}`, pl: 2, ml: 0, mr: 0, my: 2, py: 0.5, fontStyle: 'italic', color: 'text.secondary' },
+                                '& iframe': { maxWidth: '100%', borderRadius: '12px', my: 3, aspectRatio: '16/9', border: 'none', boxShadow: `0 4px 12px ${alpha(theme.palette.common.black, 0.1)}` }
                             }} />
+
+                            {embedVideoUrl && (
+                                <MotionBox variants={itemVariants} sx={{ my: 4 }}>
+                                    <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, display: 'flex', alignItems: 'center' }}>
+                                        <PlayCircleOutlineIcon sx={{ mr: 1, color: 'secondary.main' }} /> Video
+                                    </Typography>
+                                    <Box sx={{ position: 'relative', paddingTop: '56.25%', borderRadius: '12px', overflow: 'hidden', boxShadow: `0 4px 12px ${alpha(theme.palette.common.black, 0.1)}` }}>
+                                        <iframe
+                                            src={embedVideoUrl}
+                                            title={blog.video?.caption || blog.title}
+                                            frameBorder="0"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                            allowFullScreen
+                                            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+                                        />
+                                    </Box>
+                                    {blog.video?.caption && <Typography variant="caption" display="block" align="center" sx={{ mt: 1, color: 'text.secondary' }}>{blog.video.caption}</Typography>}
+                                </MotionBox>
+                            )}
 
                             {blog.tags && blog.tags.length > 0 && (
                                 <Box sx={{ mt: 4, mb: 3 }}>
@@ -374,16 +388,14 @@ export default function BlogDetailMUI() {
                                 <MotionBox
                                     variants={itemVariants}
                                     sx={{
-                                        mt: 4,
-                                        mb: 3,
-                                        p: 2.5,
+                                        mt: 4, mb: 3, p: 2.5,
                                         backgroundColor: alpha(theme.palette.secondary.light, 0.15),
                                         borderRadius: '12px',
                                         border: `1px dashed ${theme.palette.secondary.main}`
                                     }}
                                 >
                                     <Typography variant="h6" gutterBottom sx={{ fontWeight: 600, color: 'secondary.dark', display: 'flex', alignItems: 'center' }}>
-                                        <ShoppingCartIcon sx={{ mr: 1 }} /> Sản phẩm gợi ý
+                                        <ShoppingCartIcon sx={{ mr: 1 }} /> Sản phẩm gợi ý trong bài
                                     </Typography>
                                     <Grid container spacing={2}>
                                         {blog.affiliateLinks.map((link, index) => (
@@ -391,9 +403,7 @@ export default function BlogDetailMUI() {
                                                 <MotionCard
                                                     elevation={0}
                                                     sx={{
-                                                        height: '100%',
-                                                        display: 'flex',
-                                                        flexDirection: 'column',
+                                                        height: '100%', display: 'flex', flexDirection: 'column',
                                                         border: `1px solid ${alpha(theme.palette.secondary.main, 0.3)}`,
                                                         transition: 'all 0.2s ease-in-out',
                                                         '&:hover': {
@@ -410,13 +420,10 @@ export default function BlogDetailMUI() {
                                                     </CardContent>
                                                     <CardActions sx={{ px: 2, pb: 2 }}>
                                                         <Button
-                                                            variant="contained"
-                                                            color="secondary"
-                                                            href={link.url}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
+                                                            variant="contained" color="secondary"
+                                                            href={link.url} target="_blank" rel="noopener noreferrer"
                                                             fullWidth
-                                                            onClick={() => handleAffiliateLinkClick(link._id)} // Giả sử link có _id
+                                                            onClick={() => handleAffiliateLinkClick(link.url, link._id)}
                                                             endIcon={<LaunchIcon />}
                                                             sx={{ fontWeight: 600 }}
                                                         >
@@ -475,9 +482,9 @@ export default function BlogDetailMUI() {
                                 </Grid>
                             </Box>
                             <Divider sx={{ mb: 2.5 }} />
-                            {comments.length > 0 ? ( // Sửa: dùng comments.length thay vì currentDisplayComments để kiểm tra có bình luận không
+                            {comments.length > 0 ? (
                                 <List sx={{ width: '100%', bgcolor: 'background.paper', p: 0 }}>
-                                    {currentDisplayComments.map((comment, index) => (
+                                    {comments.map((comment, index) => (
                                         <React.Fragment key={comment._id || `comment-${index}`}>
                                             <ListItem alignItems="flex-start" sx={{ px: 0, py: 1.5 }}>
                                                 <ListItemAvatar sx={{ minWidth: 50 }}>
@@ -497,7 +504,7 @@ export default function BlogDetailMUI() {
                                                     }
                                                 />
                                             </ListItem>
-                                            {index < currentDisplayComments.length - 1 && <Divider variant="inset" component="li" />}
+                                            {index < comments.length - 1 && <Divider variant="inset" component="li" />}
                                         </React.Fragment>
                                     ))}
                                 </List>
@@ -532,7 +539,6 @@ export default function BlogDetailMUI() {
                     </Grid>
                 </Grid>
             </Container>
-            {/* <BlogPageFooter /> */}
         </ThemeProvider>
     );
 }

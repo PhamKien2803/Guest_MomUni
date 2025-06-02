@@ -1,11 +1,11 @@
-import { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import {
     createTheme, ThemeProvider, CssBaseline, Typography,
     Container, Box, Grid, Link,
     TextField, MenuItem,
     Paper, useTheme, alpha, Pagination, Breadcrumbs,
-    InputAdornment, CircularProgress, Alert, Chip as MuiChip
+    InputAdornment, CircularProgress, Alert, Button // Added Button for error state
 } from '@mui/material';
 import {
     Search as SearchIcon,
@@ -18,8 +18,13 @@ import { Navigation, Autoplay as SwiperAutoplay, Pagination as SwiperPagination 
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+// Assuming BlogCard and TinyBlogCard paths are correct relative to this file
 import { BlogCard } from './../../components/Blog/BlogCard/BlogCard';
+// If TinyBlogCard is used, ensure it's imported. The provided code uses BlogCard in the carousel.
+// import { TinyBlogCard } from './../../components/Blog/BlogCard/TinyBlogCard'; 
 import { BlogPageFooter } from '../../components/Blog/BlogPageFooter/BlogPageFooter';
+import WaitingForContentPage from '../../components/404/WaitingForContentPage';
+
 
 const paletteConfig = {
     primary: { main: '#E5A3B3', light: '#F8C8D4', dark: '#BF8A9B' },
@@ -54,7 +59,7 @@ const elegantTheme = createTheme({
                     transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
                     '&:hover': {
                         transform: 'translateY(-6px)',
-                        boxShadow: `0 10px 25px ${alpha(paletteConfig.primary.main, 0.15)}`,
+                        boxShadow: (theme) => `0 10px 25px ${alpha(theme.palette.primary.main, 0.15)}`,
                     },
                 }
             }
@@ -98,6 +103,8 @@ export default function BlogPageEvaStyle() {
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedTag, setSelectedTag] = useState("Tất cả");
 
+    const [apiReturnedNoPosts, setApiReturnedNoPosts] = useState(false);
+
     const postsPerPage = 6;
     const DEFAULT_AUTHOR_NAME = "MomUni Team";
     const DEFAULT_AUTHOR_IMAGE = "/assets/images/momuni-default-avatar.png";
@@ -108,30 +115,42 @@ export default function BlogPageEvaStyle() {
         const fetchAllBlogs = async () => {
             setLoading(true);
             setError(null);
+            setApiReturnedNoPosts(false);
             try {
                 const response = await axios.get('blog');
+
                 if (response.data && Array.isArray(response.data.blogs)) {
-                    const processedBlogs = response.data.blogs.map(post => ({
-                        ...post,
-                        excerpt: post.summary || post.excerpt || "Nội dung đang được cập nhật...",
-                        author: DEFAULT_AUTHOR_NAME,
-                        authorImage: DEFAULT_AUTHOR_IMAGE,
-                        category: (Array.isArray(post.tags) && post.tags.length > 0) ? post.tags[0] : DEFAULT_CATEGORY_NAME,
-                        tags: Array.isArray(post.tags) ? post.tags : [],
-                        averageRating: typeof post.averageRating === 'number' ? post.averageRating : 0,
-                        images: (post.images && post.images.length > 0 && post.images[0].url)
-                            ? post.images
-                            : [{ url: DEFAULT_POST_IMAGE_URL, caption: "Ảnh mặc định" }]
-                    }));
-                    setBlogPostsData(processedBlogs);
+                    if (response.data.blogs.length === 0) {
+                        setApiReturnedNoPosts(true);
+                        setBlogPostsData([]);
+                    } else {
+                        const processedBlogs = response.data.blogs.map(post => ({
+                            ...post,
+                            excerpt: post.summary || post.excerpt || "Nội dung đang được cập nhật...",
+                            author: post.authorId?.name || DEFAULT_AUTHOR_NAME,
+                            authorImage: post.authorId?.profileImageUrl || DEFAULT_AUTHOR_IMAGE,
+                            category: (Array.isArray(post.tags) && post.tags.length > 0) ? post.tags[0] : DEFAULT_CATEGORY_NAME,
+                            tags: Array.isArray(post.tags) ? post.tags : [],
+                            averageRating: typeof post.averageRating === 'number' ? post.averageRating : 0,
+                            images: (post.images && post.images.length > 0 && post.images[0].url)
+                                ? post.images
+                                : [{ url: DEFAULT_POST_IMAGE_URL, caption: "Ảnh mặc định" }]
+                        }));
+                        setBlogPostsData(processedBlogs);
+                    }
                 } else {
+                    console.warn("API response format unexpected:", response.data);
+                    setError('Dữ liệu nhận được từ máy chủ không hợp lệ.');
                     setBlogPostsData([]);
+                    setApiReturnedNoPosts(true);
                 }
             } catch (err) {
                 console.error("Lỗi khi tải danh sách blog:", err);
-                setError(err.response?.data?.message || "Không thể tải danh sách bài viết.");
                 if (err.response && err.response.status === 404) {
-                    setError("Hiện tại chưa có bài viết nào để hiển thị.");
+                    setError("Không tìm thấy nội dung blog yêu cầu (404).");
+                    setApiReturnedNoPosts(true);
+                } else {
+                    setError(err.response?.data?.message || "Không thể tải danh sách bài viết. Vui lòng thử lại sau.");
                 }
                 setBlogPostsData([]);
             } finally {
@@ -182,16 +201,42 @@ export default function BlogPageEvaStyle() {
             </ThemeProvider>
         );
     }
+
+    if (apiReturnedNoPosts) {
+        return (
+            <ThemeProvider theme={elegantTheme}>
+                <CssBaseline />
+                <WaitingForContentPage />
+            </ThemeProvider>
+        );
+    }
+
     if (error) {
         return (
             <ThemeProvider theme={elegantTheme}>
                 <CssBaseline />
                 <Container sx={{ py: 4, textAlign: 'center' }}>
-                    <Alert severity="error" sx={{ justifyContent: 'center' }}>Lỗi: {error}</Alert>
+                    <Alert severity="error" sx={{ justifyContent: 'center', mb: 2 }}>
+                        {error}
+                    </Alert>
+                    <Button variant="outlined" onClick={() => window.location.reload()}>
+                        Thử lại
+                    </Button>
                 </Container>
             </ThemeProvider>
         );
     }
+
+    // If blogPostsData is empty after filters, that's handled within the main return.
+    // if (blogPostsData.length === 0 && !loading && !error) {
+    //     return (
+    //         <ThemeProvider theme={elegantTheme}>
+    //             <CssBaseline />
+    //             <WaitingForContentPage />
+    //         </ThemeProvider>
+    //     );
+    // }
+
 
     return (
         <ThemeProvider theme={elegantTheme}>
@@ -275,20 +320,22 @@ export default function BlogPageEvaStyle() {
                                 {currentDisplayPosts.length > 0 ? (
                                     currentDisplayPosts.map((post) => (
                                         <Grid item xs={12} sm={6} md={4} key={post._id || post.slug}>
-                                            <BlogCard post={post} small={false} />
+                                            <BlogCard post={post} small={true} />
                                         </Grid>
                                     ))
                                 ) : (
-                                    <Grid item xs={12}>
-                                        <Paper sx={{ p: 4, textAlign: 'center', mt: 2, backgroundColor: alpha(theme.palette.background.default, 0.7) }}>
-                                            <Typography variant="h6">Không tìm thấy bài viết nào phù hợp.</Typography>
-                                            <Typography color="text.secondary">Vui lòng thử lại với từ khóa hoặc bộ lọc khác.</Typography>
-                                        </Paper>
-                                    </Grid>
+                                    !apiReturnedNoPosts && blogPostsData.length > 0 && (
+                                        <Grid item xs={12}>
+                                            <Paper sx={{ p: 4, textAlign: 'center', mt: 2, backgroundColor: alpha(theme.palette.background.default, 0.7) }}>
+                                                <Typography variant="h6">Không tìm thấy bài viết nào phù hợp.</Typography>
+                                                <Typography color="text.secondary">Vui lòng thử lại với từ khóa hoặc bộ lọc khác.</Typography>
+                                            </Paper>
+                                        </Grid>
+                                    )
                                 )}
                             </Grid>
 
-                            {totalPages > 1 && (
+                            {totalPages > 1 && currentDisplayPosts.length > 0 && (
                                 <Box sx={{ display: 'flex', justifyContent: 'center', mt: 5, mb: 3 }}>
                                     <Pagination
                                         count={totalPages}
@@ -311,7 +358,8 @@ export default function BlogPageEvaStyle() {
                         </Typography>
                         <Swiper
                             modules={[Navigation, SwiperPagination, SwiperAutoplay]}
-                            spaceBetween={24} slidesPerView={1}
+                            spaceBetween={24}
+                            slidesPerView={1}
                             loop={latestPostsForCarousel.length >= 5}
                             autoplay={{ delay: 4000, disableOnInteraction: false }}
                             pagination={{ clickable: true, el: '.swiper-pagination-latest-posts' }}

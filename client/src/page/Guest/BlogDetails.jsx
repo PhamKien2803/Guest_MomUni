@@ -1,23 +1,22 @@
-import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link as RouterLink, useParams } from "react-router-dom";
 
 // MUI Components
 import {
-    createTheme, ThemeProvider, CssBaseline, AppBar, Toolbar, Typography,
-    Button, Container, Box, Card, CardMedia, CardContent, Grid, Link,
-    IconButton, Chip, TextField, MenuItem, Alert, Snackbar,
+    createTheme, ThemeProvider, CssBaseline, Typography,
+    Button, Container, Box, CardMedia, Grid, Link,
+    IconButton, Chip, TextField, Alert,
     Paper, Stack, Divider, useTheme, alpha, Pagination, Breadcrumbs,
-    InputAdornment, List, ListItem, ListItemText, ListItemAvatar,
-    Avatar, Rating // Thêm Rating
+    List, ListItem, ListItemText, ListItemAvatar,
+    Avatar, Rating
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 
 // MUI Icons
 import {
-    Menu as MenuIcon, ArrowForwardIos, FavoriteBorder,
-    Restaurant, ChildCare, SelfImprovement, Psychology, LocalHospital,
-    FamilyRestroom, Spa, School, Facebook, Instagram, Twitter,
-    ChevronRight, Search as SearchIcon, AccessTime as TimeIcon,
+    Menu as MenuIcon,
+    Facebook, Instagram, Twitter,
+    Search as SearchIcon, AccessTime as TimeIcon,
     Visibility as ViewIcon, Person as PersonIcon, Category as CategoryIcon,
     CalendarToday as CalendarTodayIcon,
     Whatshot as TrendingIcon, NewReleases as NewIcon,
@@ -169,68 +168,6 @@ const staticComments = [
 
 
 // --- COMPONENTS ---
-const PulsatingHeartsAnimation = ({ size = 30, motherHeartChar = "💖", childHeartChar = "💗" }) => { /* ... Giữ nguyên ... */ };
-
-// --- ✨ BLOG PAGE FOOTER (Không có Form) ✨ ---
-const BlogPageFooter = () => {
-    const theme = useTheme();
-    return (
-        <Box component="footer" sx={{
-            backgroundColor: theme.palette.primary.dark, // Sử dụng màu tối hơn của primary
-            color: 'white',
-            py: { xs: 5, md: 7 },
-            mt: 8,
-            borderTopLeftRadius: { xs: '20px', md: '30px' },
-            borderTopRightRadius: { xs: '20px', md: '30px' },
-            boxShadow: '0 -10px 25px rgba(0,0,0,0.15)',
-        }}>
-            <Container maxWidth="lg">
-                <Grid container spacing={4} justifyContent="space-between" alignItems="flex-start">
-                    <Grid item xs={12} md={4} sx={{ textAlign: { xs: 'center', md: 'left' } }}>
-                        <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 2, justifyContent: { xs: 'center', md: 'flex-start' } }}>
-                            <PulsatingHeartsAnimation size={36} motherHeartChar="🤍" childHeartChar={theme.palette.secondary.light} />
-                            <Typography variant="h4" sx={{ fontFamily: '"Lora", serif', color: 'white' }}>MomUni</Typography>
-                        </Stack>
-                        <Typography variant="body2" sx={{ color: alpha(theme.palette.common.white, 0.85), pr: { md: 3 }, lineHeight: 1.7 }}>
-                            Đồng hành cùng mẹ trên mọi nẻo đường, chia sẻ kiến thức, lan tỏa yêu thương.
-                        </Typography>
-                    </Grid>
-
-                    <Grid item xs={6} sm={3} md={2.5}>
-                        <Typography variant="h6" sx={{ mb: 2, color: 'white', fontWeight: 600 }}>Khám Phá</Typography>
-                        <Stack spacing={1.2}>
-                            <Link href="/blog" color="inherit" underline="hover" sx={{ opacity: 0.85, '&:hover': { opacity: 1, color: theme.palette.secondary.light } }}>Blog</Link>
-                            <Link href="/chu-de" color="inherit" underline="hover" sx={{ opacity: 0.85, '&:hover': { opacity: 1, color: theme.palette.secondary.light } }}>Chủ Đề</Link>
-                            <Link href="/hoi-dap" color="inherit" underline="hover" sx={{ opacity: 0.85, '&:hover': { opacity: 1, color: theme.palette.secondary.light } }}>Hỏi Đáp</Link>
-                            <Link href="/cong-dong" color="inherit" underline="hover" sx={{ opacity: 0.85, '&:hover': { opacity: 1, color: theme.palette.secondary.light } }}>Cộng Đồng</Link>
-                        </Stack>
-                    </Grid>
-                    <Grid item xs={6} sm={3} md={2.5}>
-                        <Typography variant="h6" sx={{ mb: 2, color: 'white', fontWeight: 600 }}>Về MomUni</Typography>
-                        <Stack spacing={1.2}>
-                            <Link href="/about" color="inherit" underline="hover" sx={{ opacity: 0.85, '&:hover': { opacity: 1, color: theme.palette.secondary.light } }}>Giới Thiệu</Link>
-                            <Link href="/contact" color="inherit" underline="hover" sx={{ opacity: 0.85, '&:hover': { opacity: 1, color: theme.palette.secondary.light } }}>Liên Hệ</Link>
-                            <Link href="/dieu-khoan" color="inherit" underline="hover" sx={{ opacity: 0.85, '&:hover': { opacity: 1, color: theme.palette.secondary.light } }}>Điều Khoản</Link>
-                            <Link href="/bao-mat" color="inherit" underline="hover" sx={{ opacity: 0.85, '&:hover': { opacity: 1, color: theme.palette.secondary.light } }}>Bảo Mật</Link>
-                        </Stack>
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={3}>
-                        <Typography variant="h6" sx={{ mb: 2, color: 'white', fontWeight: 600 }}>Kết nối với chúng tôi</Typography>
-                        <Stack direction="row" spacing={1.5}>
-                            <IconButton href="#" aria-label="Facebook" sx={{ color: 'white', bgcolor: alpha(theme.palette.common.white, 0.1), '&:hover': { bgcolor: alpha(theme.palette.common.white, 0.25), transform: 'translateY(-2px)' } }}><Facebook /></IconButton>
-                            <IconButton href="#" aria-label="Instagram" sx={{ color: 'white', bgcolor: alpha(theme.palette.common.white, 0.1), '&:hover': { bgcolor: alpha(theme.palette.common.white, 0.25), transform: 'translateY(-2px)' } }}><Instagram /></IconButton>
-                            <IconButton href="#" aria-label="Twitter" sx={{ color: 'white', bgcolor: alpha(theme.palette.common.white, 0.1), '&:hover': { bgcolor: alpha(theme.palette.common.white, 0.25), transform: 'translateY(-2px)' } }}><Twitter /></IconButton>
-                        </Stack>
-                    </Grid>
-                </Grid>
-                <Divider sx={{ my: 4, borderColor: alpha(theme.palette.common.white, 0.25) }} />
-                <Typography variant="body2" sx={{ color: alpha(theme.palette.common.white, 0.85) }} align="center">
-                    © {new Date().getFullYear()} MomUni. With love and care for every mom and baby.
-                </Typography>
-            </Container>
-        </Box>
-    );
-};
 
 
 export default function BlogDetailMUI() {

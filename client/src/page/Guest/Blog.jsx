@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import {
     createTheme, ThemeProvider, CssBaseline, Typography,
-    Button, Container, Box, CardMedia, CardContent, Grid, Link,
-    IconButton, Chip, TextField, MenuItem, Alert, Snackbar,
+    Container, Box, Grid, Link,
+    IconButton, TextField, MenuItem,
     Paper, Stack, Divider, useTheme, alpha, Pagination, Breadcrumbs,
-    InputAdornment, Avatar, CardActionArea
+    InputAdornment
 } from '@mui/material';
 import {
     Menu as MenuIcon,
@@ -20,6 +20,9 @@ import { Navigation, Autoplay as SwiperAutoplay, Pagination as SwiperPagination 
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+import { BlogCard } from './../../components/Blog/BlogCard/BlogCard';
+import { BlogPageFooter } from '../../components/Blog/BlogPageFooter/BlogPageFooter';
+
 const paletteConfig = {
     primary: { main: '#E5A3B3', light: '#F8C8D4', dark: '#BF8A9B' },
     secondary: { main: '#A0C4B8', light: '#C0D8D0', dark: '#7FA99F' },
@@ -102,189 +105,6 @@ const initialBlogPosts = [
 const allCategories = ["Tất cả", ...new Set(initialBlogPosts.map(post => post.category).sort())];
 
 // --- COMPONENTS ---
-
-const BlogCard = ({ post, small = false }) => {
-    const theme = useTheme();
-    const cardLink = `/blog/${post.slug}`;
-
-    return (
-        <MotionBox
-            component={CardActionArea}
-            href={cardLink}
-            variants={sectionVariants}
-            sx={{
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                textDecoration: 'none',
-                backgroundColor: 'background.paper',
-                '&:hover .blog-card-media': {
-                    transform: 'scale(1.05)',
-                },
-            }}
-        >
-            <Box sx={{
-                overflow: 'hidden', position: 'relative',
-                pt: small ? '75%' : '56.25%',
-                borderRadius: '12px 12px 0 0'
-            }}>
-                <CardMedia
-                    component="img"
-                    className="blog-card-media"
-                    sx={{
-                        position: 'absolute',
-                        top: 0, left: 0,
-                        width: '100%', height: '100%',
-                        objectFit: 'cover',
-                        transition: 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-                    }}
-                    image={post.images && post.images.length > 0 ? post.images[0].url : 'https://placehold.co/600x400/E5A3B3/FFF7F5?text=MomUni'}
-                    alt={post.title}
-                />
-                <Chip
-                    label={post.category}
-                    size="small"
-                    sx={{
-                        position: 'absolute',
-                        top: small ? 8 : 12,
-                        left: small ? 8 : 12,
-                        backgroundColor: alpha(theme.palette.primary.main, 0.85),
-                        color: 'white',
-                        fontWeight: 600,
-                        backdropFilter: 'blur(2px)',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.5px',
-                        fontSize: small ? '0.65rem' : '0.7rem'
-                    }}
-                />
-            </Box>
-            <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', p: small ? 1.5 : 2 }}>
-                <Typography
-                    variant={small ? "body1" : "h6"}
-                    component="h2"
-                    gutterBottom={!small}
-                    sx={{
-                        color: 'text.primary',
-                        fontWeight: 600,
-                        fontSize: small ? '0.95rem' : '1.1rem',
-                        display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: small ? 2 : 3,
-                        overflow: 'hidden', textOverflow: 'ellipsis',
-                        minHeight: small ? '2.4em' : '3.9em',
-                        lineHeight: 1.3,
-                        mb: small ? 0.5 : 1
-                    }}
-                >
-                    {post.title}
-                </Typography>
-                {!small && ( // Ẩn excerpt và thông tin tác giả khi small=true
-                    <>
-                        <Typography variant="body2" color="text.secondary" sx={{
-                            mb: 1.5,
-                            display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: 3,
-                            overflow: 'hidden', textOverflow: 'ellipsis',
-                            minHeight: '4.2em'
-                        }}>
-                            {post.excerpt}
-                        </Typography>
-                        <Stack direction="row" alignItems="center" spacing={1} sx={{ mt: 'auto', pt: 1, color: 'text.secondary' }}>
-                            <Avatar src={post.authorImage || undefined} sx={{ width: 24, height: 24, fontSize: '0.75rem' }}>{post.author?.[0]}</Avatar>
-                            <Typography variant="caption" sx={{ fontWeight: 500 }}>{post.author}</Typography>
-                            <Divider orientation="vertical" flexItem sx={{ height: 12, alignSelf: 'center' }} />
-                            <Typography variant="caption">{new Date(post.createdAt).toLocaleDateString('vi-VN')}</Typography>
-                        </Stack>
-                    </>
-                )}
-            </CardContent>
-        </MotionBox>
-    );
-};
-
-const SidebarSection = ({ title, icon, children }) => (
-    <Paper elevation={0} sx={{ p: 2.5, borderRadius: '16px', mb: 3, border: `1px solid ${alpha(elegantTheme.palette.primary.main, 0.15)}`, backgroundColor: alpha(elegantTheme.palette.background.paper, 0.8) }}>
-        <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
-            {icon && React.cloneElement(icon, { sx: { color: 'primary.main', fontSize: '1.6rem' } })}
-            <Typography variant="h5" sx={{ color: 'text.primary', fontWeight: 600 }}>{title}</Typography>
-        </Stack>
-        {children}
-    </Paper>
-);
-
-const BlogPageFooter = () => {
-    const theme = useTheme();
-
-    return (
-        <Box
-            component="footer"
-            sx={{
-                backgroundColor: theme.palette.secondary.main,
-                color: 'white',
-                pt: 8,
-                pb: 6,
-                mt: 10,
-                position: 'relative'
-            }}
-        >
-            <Box
-                sx={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: '100px',
-                    background: `linear-gradient(to bottom, ${theme.palette.background.default}, ${theme.palette.secondary.main})`,
-                    zIndex: 0
-                }}
-            />
-
-            <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1 }}>
-                <Grid container spacing={4} justifyContent="center" textAlign="center">
-                    <Grid item xs={12}>
-                        <Typography
-                            variant="h5"
-                            sx={{
-                                fontFamily: '"Lora", serif',
-                                mb: 2,
-                                color: 'white',
-                                fontWeight: 700,
-                            }}
-                        >
-                            MomUni
-                        </Typography>
-                        <Stack
-                            direction="row"
-                            spacing={{ xs: 2, sm: 4 }}
-                            justifyContent="center"
-                            sx={{ mb: 3 }}
-                        >
-                            <Link href="#" color="inherit" underline="hover" sx={{ fontWeight: 500 }}>Blog</Link>
-                            <Link href="#" color="inherit" underline="hover" sx={{ fontWeight: 500 }}>Về chúng tôi</Link>
-                            <Link href="#" color="inherit" underline="hover" sx={{ fontWeight: 500 }}>Điều khoản</Link>
-                            <Link href="#" color="inherit" underline="hover" sx={{ fontWeight: 500 }}>Liên hệ</Link>
-                        </Stack>
-                        <Stack direction="row" spacing={1.5} justifyContent="center">
-                            <IconButton href="#" aria-label="Facebook" sx={{ color: 'white', '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' } }}>
-                                <Facebook />
-                            </IconButton>
-                            <IconButton href="#" aria-label="Instagram" sx={{ color: 'white', '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' } }}>
-                                <Instagram />
-                            </IconButton>
-                            <IconButton href="#" aria-label="Twitter" sx={{ color: 'white', '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' } }}>
-                                <Twitter />
-                            </IconButton>
-                        </Stack>
-                    </Grid>
-                </Grid>
-
-                <Divider sx={{ my: 4, borderColor: 'rgba(255, 255, 255, 0.2)' }} />
-
-                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }} align="center">
-                    © {new Date().getFullYear()} MomUni. All rights reserved. Made with ❤️ for parents.
-                </Typography>
-            </Container>
-        </Box>
-    );
-};
-
 
 export default function BlogPageEvaStyle() {
     const theme = useTheme();

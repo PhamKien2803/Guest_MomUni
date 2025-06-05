@@ -84,7 +84,7 @@ export const Header = () => {
     const [scrolled, setScrolled] = useState(false);
     const navigate = useNavigate();
     const handleNavigateToBlog = () => {
-        navigate('/blog');
+        navigate('/');
     };
     useEffect(() => {
         const handleScroll = () => setScrolled(window.scrollY > 10);
@@ -104,9 +104,9 @@ export const Header = () => {
                     </Box>
 
                     <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 2 }}>
-                        <Button variant="text" sx={{ color: 'text.primary' }}>Trang Chủ</Button>
+                        <Button variant="text" sx={{ color: 'text.primary' }}>Về chúng tôi</Button>
                         <Button variant="text" sx={{ color: 'text.primary' }} onClick={handleNavigateToBlog}>
-                            Blog
+                            Trang chủ
                         </Button>
                         <Button variant="text" sx={{ color: 'text.primary' }}>Chủ đề</Button>
                         <Button variant="contained" color="primary">Liên hệ</Button>

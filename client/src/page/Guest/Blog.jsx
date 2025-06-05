@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import {
     createTheme, ThemeProvider, CssBaseline, Typography,
@@ -226,16 +226,6 @@ export default function BlogPageEvaStyle() {
             </ThemeProvider>
         );
     }
-
-    // If blogPostsData is empty after filters, that's handled within the main return.
-    // if (blogPostsData.length === 0 && !loading && !error) {
-    //     return (
-    //         <ThemeProvider theme={elegantTheme}>
-    //             <CssBaseline />
-    //             <WaitingForContentPage />
-    //         </ThemeProvider>
-    //     );
-    // }
 
 
     return (

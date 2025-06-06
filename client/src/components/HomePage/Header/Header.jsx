@@ -93,9 +93,9 @@ export const Header = () => {
     }, []);
 
     return (
-        <AppBar position="sticky" elevation={scrolled ? 4 : 0} sx={{ backgroundColor: scrolled ? 'rgba(255, 247, 245, 0.9)' : 'transparent', backdropFilter: scrolled ? 'blur(10px)' : 'none', transition: 'background-color 0.3s ease, box-shadow 0.3s ease', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+        <AppBar position="sticky" elevation={scrolled ? 4 : 0} sx={{ p: 0, backgroundColor: "pink", backdropFilter: scrolled ? 'blur(10px)' : 'none', transition: 'background-color 0.3s ease, box-shadow 0.3s ease', zIndex: (theme) => theme.zIndex.drawer + 1 }}>
             <Container maxWidth="xl">
-                <Toolbar disableGutters>
+                <Toolbar disableGutters sx={{ px: 0, py: 0, minHeight: '64px !important' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexGrow: 1, pl: { xs: 1, md: 0 } }}>
                         <PulsatingHeartsAnimation size={28} />
                         <Typography variant="h6" component="div" sx={{ fontFamily: '"Lora", serif', color: 'text.primary' }}>

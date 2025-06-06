@@ -205,24 +205,45 @@ function BlogDetailWrapper() {
                 };
                 setCurrentBlogRating(blogData.averageRating);
                 if (blogData.content) {
+                    const markdown = blogData.content;
+
+                    const html = markdown
+                        .replace(/^###### (.*$)/gim, '<h6>$1</h6>')
+                        .replace(/^##### (.*$)/gim, '<h5>$1</h5>')
+                        .replace(/^#### (.*$)/gim, '<h4>$1</h4>')
+                        .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+                        .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+                        .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+                        .replace(/!\[.*?\]\((.*?)\)/gim, '<img src="$1" alt="image" />')
+                        .replace(/\n{2,}/g, '<br/><br/>');
+
                     const parser = new DOMParser();
-                    const doc = parser.parseFromString(blogData.content, "text/html");
-                    const headings = Array.from(doc.querySelectorAll("h2, h3")).map(
-                        (h, index) => {
-                            const id = `section-${h.tagName.toLowerCase()}-${index}`;
-                            h.setAttribute("id", id);
-                            return {
-                                id: id,
-                                text: h.textContent?.trim() || "Mục không tên",
-                                level: h.tagName.toLowerCase(),
-                            };
-                        }
-                    );
-                    setToc(headings);
+                    const doc = parser.parseFromString(html, "text/html");
+
+                    const headings = [];
+                    doc.querySelectorAll("h1, h2, h3").forEach((el) => {
+                        const text = el.textContent?.trim() || "no-title";
+                        const slug = text
+                            .toLowerCase()
+                            .replace(/[^a-zA-Z0-9\u00C0-\u1EF9 ]/g, "")
+                            .replace(/\s+/g, "-");
+
+                        el.setAttribute("id", slug);
+                        headings.push({
+                            id: slug,
+                            text,
+                            level: parseInt(el.tagName[1]),
+                        });
+                    });
+
                     blogData.contentWithIds = doc.body.innerHTML;
+                    setToc(headings);
                 } else {
                     blogData.contentWithIds = "<p>Nội dung bài viết hiện chưa có.</p>";
+                    setToc([]);
                 }
+
+
                 setBlog(blogData);
 
                 const allRes = await axios.get(`blog`);
@@ -413,10 +434,7 @@ function BlogDetailWrapper() {
 
                                 {blog.summary && <Typography variant="subtitle1" className={styles.blogSummary}>{blog.summary}</Typography>}
 
-                                <Box
-                                    className={`${styles.blogContent} blog-post-content`}
-                                    dangerouslySetInnerHTML={{ __html: blog.contentWithIds || "" }}
-                                />
+                                <Box className={`${styles.blogContent} blog-post-content`} dangerouslySetInnerHTML={{ __html: blog.contentWithIds || "" }} />
 
                                 {embedVideoUrl && (
                                     <MotionBox

@@ -1,150 +1,104 @@
-import {
-    Typography,
-    Box, CardMedia, CardContent,
-    Chip,
-    Stack, Divider, useTheme, alpha,
-    Avatar, CardActionArea
-} from '@mui/material';
+import { Card, CardMedia, CardContent, Typography, Box, Link as MuiLink } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
 
-import { motion } from 'framer-motion';
+const DEFAULT_POST_IMAGE_URL = `https://placehold.co/600x338/E5A3B3/FFF7F5?text=MomUni`;
 
-const sectionVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
-};
-const MotionBox = motion(Box);
-
-// Hàm cắt nội dung dài
-const truncateText = (text, maxLength = 160) => {
-    if (!text) return '';
-    return text.length > maxLength ? text.slice(0, maxLength - 3).trim() + '...' : text;
-};
-
-export const BlogCard = ({ post, small = false }) => {
-    const theme = useTheme();
-    const cardLink = `/blog/${post.slug}`;
+export const BlogCard = ({ post, small, compact, sx: cardSxProp }) => {
+    const cardContentPadding = small || compact ? 1.5 : 2;
+    const titleVariant = small || compact ? "h6" : "h5";
+    const titleLineClamp = 2;
+    const summaryLineClamp = small || compact ? 2 : 3;
 
     return (
-        <MotionBox
-            component={CardActionArea}
-            href={cardLink}
-            variants={sectionVariants}
+        <MuiLink
+            component={RouterLink}
+            to={`/blog/${post.slug || post.id}`}
+            underline="none"
             sx={{
+                display: 'block',
                 height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                textDecoration: 'none',
-                backgroundColor: 'background.paper',
-                borderRadius: 2,
-                boxShadow: 1,
-                transition: 'all 0.3s ease-in-out',
-                '&:hover': {
-                    boxShadow: `0 0 0 3px ${alpha(theme.palette.primary.main, 0.3)}`,
-                    transform: 'translateY(-3px)',
-                },
-                '&:hover .blog-card-media': {
-                    transform: 'scale(1.05)',
-                },
+                textDecoration: 'none'
             }}
         >
-            {/* Ảnh */}
-            <Box sx={{
-                overflow: 'hidden',
-                position: 'relative',
-                pt: small ? '75%' : '56.25%',
-                borderRadius: '12px 12px 0 0',
+            <Card sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                height: '100%',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.07)',
+                transition: 'transform 0.2s ease-out, box-shadow 0.2s ease-out',
+                '&:hover': {
+                    transform: 'translateY(-3px)',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                },
+                ...cardSxProp
             }}>
                 <CardMedia
                     component="img"
-                    className="blog-card-media"
                     sx={{
-                        position: 'absolute',
-                        top: 0, left: 0,
-                        width: '100%', height: '100%',
+                        width: '100%',
+                        aspectRatio: '16/9',
                         objectFit: 'cover',
-                        transition: 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
                     }}
-                    image={post.images?.[0]?.url || 'https://placehold.co/600x400/E5A3B3/FFF7F5?text=MomUni'}
-                    alt={post.title}
+                    image={post.mainImage || DEFAULT_POST_IMAGE_URL}
+                    alt={post.title || 'Blog post image'}
                 />
-                <Chip
-                    label={post.category}
-                    size="small"
-                    sx={{
-                        position: 'absolute',
-                        top: small ? 8 : 12,
-                        left: small ? 8 : 12,
-                        backgroundColor: alpha(theme.palette.primary.main, 0.85),
-                        color: 'white',
-                        fontWeight: 600,
-                        backdropFilter: 'blur(2px)',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.5px',
-                        fontSize: small ? '0.65rem' : '0.7rem'
-                    }}
-                />
-            </Box>
 
-            {/* Nội dung */}
-            <CardContent
-                sx={{
+                <CardContent sx={{
                     flexGrow: 1,
                     display: 'flex',
                     flexDirection: 'column',
-                    p: small ? 1.5 : 2,
-                }}
-            >
-                <Typography
-                    variant={small ? "body1" : "h6"}
-                    component="h2"
-                    gutterBottom={!small}
-                    sx={{
-                        color: 'text.primary',
-                        fontWeight: 600,
-                        fontSize: small ? '0.95rem' : '1.1rem',
-                        display: '-webkit-box',
-                        WebkitBoxOrient: 'vertical',
-                        WebkitLineClamp: small ? 2 : 3,
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        minHeight: small ? '2.4em' : '3.9em',
-                        lineHeight: 1.3,
-                        mb: small ? 0.5 : 1,
-                    }}
-                >
-                    {post.title}
-                </Typography>
-
-                {!small && (
-                    <>
+                    p: cardContentPadding,
+                    // Giúp padding bottom nhất quán hơn
+                    pb: `${cardContentPadding}px !important`
+                }}>
+                    {/* Box này sẽ co giãn, đẩy phần tác giả/ngày tháng xuống dưới cùng */}
+                    <Box sx={{ flexGrow: 1 }}>
                         <Typography
-                            variant="body2"
-                            color="text.secondary"
+                            variant={titleVariant}
+                            component="div"
                             sx={{
-                                mb: 1.5,
-                                display: '-webkit-box',
-                                WebkitBoxOrient: 'vertical',
-                                WebkitLineClamp: 3,
+                                fontWeight: 'bold',
+                                color: 'text.primary',
+                                mb: 0.5,
                                 overflow: 'hidden',
                                 textOverflow: 'ellipsis',
-                                minHeight: '4.2em',
+                                display: '-webkit-box',
+                                WebkitLineClamp: titleLineClamp,
+                                WebkitBoxOrient: 'vertical',
                             }}
                         >
-                            {truncateText(post.excerpt)}
+                            {post.title || "Không có tiêu đề"}
                         </Typography>
 
-                        {/* Thông tin tác giả */}
-                        <Stack direction="row" alignItems="center" spacing={1} sx={{ mt: 'auto', pt: 1, color: 'text.secondary' }}>
-                            <Avatar src={post.authorImage || undefined} sx={{ width: 24, height: 24, fontSize: '0.75rem' }}>
-                                {post.author?.[0]}
-                            </Avatar>
-                            <Typography variant="caption" sx={{ fontWeight: 500 }}>{post.author}</Typography>
-                            <Divider orientation="vertical" flexItem sx={{ height: 12, alignSelf: 'center' }} />
-                            <Typography variant="caption">{new Date(post.createdAt).toLocaleDateString('vi-VN')}</Typography>
-                        </Stack>
-                    </>
-                )}
-            </CardContent>
-        </MotionBox>
+                        {post.summary && !(small && compact) && (
+                            <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                sx={{
+                                    mb: 1,
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    display: '-webkit-box',
+                                    WebkitLineClamp: summaryLineClamp,
+                                    WebkitBoxOrient: 'vertical',
+                                }}
+                            >
+                                {post.summary}
+                            </Typography>
+                        )}
+                    </Box>
+
+                    {/* Box này sẽ luôn bị đẩy xuống đáy của CardContent */}
+                    <Box sx={{ mt: 'auto', pt: 1 }}>
+                        <Typography variant="caption" display="block" color="text.secondary" sx={{ lineHeight: 1.3 }}>
+                            {post.author || "MomUni Team"}
+                        </Typography>
+                        <Typography variant="caption" display="block" color="text.secondary" sx={{ lineHeight: 1.3 }}>
+                            {post.createdAt || "Không có ngày"}
+                        </Typography>
+                    </Box>
+                </CardContent>
+            </Card>
+        </MuiLink>
     );
 };

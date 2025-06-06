@@ -49,6 +49,7 @@ import WaitingForContentPage from "../../components/404/WaitingForContentPage";
 import styles from "./BlogDetails.module.scss";
 import { Header } from "../../components/HomePage/Header/Header";
 import Footer from "../../components/HomePage/Footer/Footer";
+import { BlogPageFooter } from "../../components/Blog/BlogPageFooter/BlogPageFooter";
 
 const paletteConfig = {
   primary: { main: "#E5A3B3", light: "#F8C8D4", dark: "#BF8A9B" },
@@ -358,8 +359,8 @@ export default function BlogDetailMUI() {
               : 0,
           images:
             Array.isArray(fetchedBlog.images) &&
-            fetchedBlog.images.length > 0 &&
-            fetchedBlog.images[0].url
+              fetchedBlog.images.length > 0 &&
+              fetchedBlog.images[0].url
               ? fetchedBlog.images
               : [],
           video: fetchedBlog.video || null,
@@ -524,7 +525,7 @@ export default function BlogDetailMUI() {
   return (
     <ThemeProvider theme={elegantTheme}>
       <CssBaseline />
-      <Header style={{padding: '0'}}/>
+      <Header style={{ padding: '0' }} />
       <Container className={styles.blogDetailWrapper} maxWidth="lg">
         <Breadcrumbs className={styles.blogBreadcrumbs} aria-label="breadcrumb">
           <Link component={RouterLink} underline="hover" color="inherit" to="/">
@@ -1010,7 +1011,7 @@ export default function BlogDetailMUI() {
           </Grid>
         </Grid>
       </Container>
-      <Footer />
+      <BlogPageFooter />
     </ThemeProvider>
   );
 }

@@ -1,7 +1,6 @@
 import * as React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import HomePage2 from "./page/Guest/HomePage";
-import BlogPageMUI from "./page/Guest/Blog";
 import BlogPageDetails from "./page/Guest/BlogDetails";
 import Blog2 from "./page/Guest/Blog2";
 

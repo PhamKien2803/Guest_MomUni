@@ -40,7 +40,7 @@
 
 .blogCoverImage img {
   width: 100%;
-  max-height: 550px;
+  max-height: 550px; /* Bạn có thể tăng giá trị này nếu muốn ảnh bìa cao hơn */
   object-fit: cover;
 }
 
@@ -59,10 +59,11 @@
   padding-left: 16px;
 }
 
+/* --- THAY ĐỔI: Bố cục rộng hơn --- */
 .blogContent {
   word-break: break-word;
   overflow-wrap: break-word;
-  max-width: 680px;
+  max-width: 1140px; /* Tăng chiều rộng nội dung */
   margin: 0 auto;
 }
 
@@ -75,7 +76,7 @@
 
 .blogContent h2 {
   font-size: 2rem;
-  color: #BF8A9B;
+  color: #bf8a9b;
 }
 
 .blogContent h3 {
@@ -86,17 +87,17 @@
 .blogContent p {
   font-size: 1rem;
   line-height: 1.8;
-  color: #4A4A4A;
+  color: #4a4a4a;
   margin-bottom: 16px;
 }
 
 .blogContent a {
-  color: #A0C4B8;
+  color: #a0c4b8;
   text-decoration: underline;
 }
 
 .blogContent a:hover {
-  color: #7FA99F;
+  color: #7fa99f;
 }
 
 .blogContent img {
@@ -109,7 +110,7 @@
 }
 
 .blogContent blockquote {
-  border-left: 4px solid #F8C8D4;
+  border-left: 4px solid #f8c8d4;
   padding-left: 16px;
   margin: 16px 0;
   font-style: italic;
@@ -130,7 +131,7 @@
 
 .blogContent strong {
   font-weight: 600;
-  color: #4A4A4A;
+  color: #4a4a4a;
 }
 
 .blogContent iframe {
@@ -142,22 +143,32 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
+/* --- THAY ĐỔI: Hiệu ứng hover và bố cục rộng hơn --- */
 .blogCardPaper {
   border: 1px solid rgba(229, 163, 179, 0.2);
   padding: 24px;
   width: 100%;
-  max-width: 720px;
+  max-width: 1140px; /* Tăng chiều rộng */
   margin: 0 auto;
   box-sizing: border-box;
+  /* Thêm transition để hiệu ứng mượt mà */
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 
+/* Thêm hiệu ứng khi di chuột qua */
+.blogCardPaper:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 24px rgba(229, 163, 179, 0.2);
+}
+
+/* --- THAY ĐỔI: Bố cục rộng hơn --- */
 .blogRatingBox {
   text-align: center;
   padding: 24px;
   background-color: rgba(232, 168, 188, 0.15);
   border-radius: 12px;
   margin-top: 2rem;
-  max-width: 680px;
+  max-width: 1140px; /* Tăng chiều rộng */
   margin-left: auto;
   margin-right: auto;
 }
@@ -180,32 +191,41 @@
 
 .blogSidebarSection h6 {
   font-weight: 600;
-  color: #5D4037;
+  color: #5d4037;
   margin-bottom: 12px;
 }
 
 .blogSidebarSection a {
   font-weight: 500;
-  color: #4A4A4A;
+  color: #4a4a4a;
   text-decoration: none;
   display: block;
   padding: 4px 0;
 }
 
 .blogSidebarSection a:hover {
-  color: #BF8A9B;
+  color: #bf8a9b;
 }
 
+/* --- THAY ĐỔI: Bố cục rộng hơn --- */
 .blogCommentBox,
 .blogAffiliateBox,
 .blogTagWrapper {
-  max-width: 720px;
+  max-width: 1140px; /* Tăng chiều rộng */
   margin-left: auto;
   margin-right: auto;
 }
 
+/* --- THAY ĐỔI: Bố cục rộng hơn --- */
 .blogDivider {
   margin: 2rem auto;
-  max-width: 680px;
+  max-width: 1140px; /* Tăng chiều rộng */
   border-color: rgba(229, 163, 179, 0.2);
+}
+.sidebarBlock {
+  .MuiCard-root {
+    width: 100%;
+    min-width: 280px;
+    padding: 16px 24px;
+  }
 }

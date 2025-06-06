@@ -45,6 +45,7 @@ import { motion } from "framer-motion";
 import WaitingForContentPage from "../../components/404/WaitingForContentPage";
 import styles from "../../page/Guest/BlogDetails.module.scss";
 import { elegantTheme, itemVariants, sectionVariants } from "../../components/BlogDetails/theme";
+import TableOfContents from "./TableOfContents";
 
 const MotionBox = motion(Box);
 const MotionPaper = motion(Paper);
@@ -55,10 +56,37 @@ const DEFAULT_AUTHOR_IMAGE = "/assets/images/momuni-default-avatar.png";
 const DEFAULT_POST_IMAGE_URL =
     "https://placehold.co/1200x550/E5A3B3/FFF7F5?text=MomUni+Blog";
 
+
 function BlogDetailWrapper() {
     const { slug } = useParams();
     const [blog, setBlog] = useState(null);
-    const [toc, setToc] = useState([]);
+    const [toc, setToc] = useState([
+        {
+            id: "gioi-thieu",
+            text: "1. Giới thiệu về chủ đề",
+            level: 1,
+        },
+        {
+            id: "nguyen-nhan",
+            text: "2. Nguyên nhân chính",
+            level: 1,
+        },
+        {
+            id: "nguyen-nhan-noi-bat",
+            text: "2.1. Nguyên nhân nổi bật",
+            level: 2,
+        },
+        {
+            id: "giai-phap",
+            text: "3. Các giải pháp đề xuất",
+            level: 1,
+        },
+        {
+            id: "ket-luan",
+            text: "4. Kết luận và khuyến nghị",
+            level: 1,
+        },
+    ]);;
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [comments, setComments] = useState([]);
@@ -81,6 +109,8 @@ function BlogDetailWrapper() {
     const [commentPage, setCommentPage] = useState(1);
     const [totalCommentPages, setTotalCommentPages] = useState(1);
     const commentsPerPage = 5;
+
+
 
     const fetchBlogRatings = useCallback(async (blogId) => {
         if (!blogId) return;
@@ -322,332 +352,250 @@ function BlogDetailWrapper() {
     const embedVideoUrl = blog.video?.url
         ? getYouTubeEmbedUrl(blog.video.url)
         : null;
+
+
+
     return (
-        <Container className={styles.blogDetailWrapper} maxWidth="lg">
-            <Breadcrumbs className={styles.blogBreadcrumbs} aria-label="breadcrumb">
-                <Link component={RouterLink} underline="hover" color="inherit" to="/">
-                    Trang chủ
-                </Link>
-                <Link
-                    component={RouterLink}
-                    underline="hover"
-                    color="inherit"
-                    to="/blog"
-                >
-                    Blog
-                </Link>
-                <Typography
-                    className={styles.blogTitleBreadcrumb}
-                    color="text.primary"
-                >
-                    {blog.title || "Chi tiết bài viết"}
-                </Typography>
-            </Breadcrumbs>
-
-            <Grid container spacing={5}>
-                <Grid item xs={12} md={7}>
-                    <MotionPaper
-                        className={styles.blogCardPaper}
-                        elevation={0}
-                        variants={sectionVariants}
-                        initial="hidden"
-                        animate="visible"
-                    >
-                        <Typography variant="h1" component="h1" gutterBottom>
-                            {blog.title}
-                        </Typography>
-
-                        <Stack direction="row" spacing={1.5} className={styles.blogMeta}>
-                            <Stack direction="row" alignItems="center" spacing={0.5}>
-                                <Avatar src={blog.authorImage}>{blog.author?.[0]}</Avatar>
-                                <Typography variant="caption" sx={{ fontWeight: 600 }}>
-                                    {blog.author}
-                                </Typography>
-                            </Stack>
-                            <Stack direction="row" alignItems="center" spacing={0.5}>
-                                <CalendarTodayIcon sx={{ fontSize: "1rem" }} />
-                                <Typography variant="caption">
-                                    {new Date(blog.createdAt).toLocaleDateString("vi-VN", {
-                                        day: "2-digit",
-                                        month: "2-digit",
-                                        year: "numeric",
-                                    })}
-                                </Typography>
-                            </Stack>
-                            <Stack direction="row" alignItems="center" spacing={0.5}>
-                                <VisibilityIcon sx={{ fontSize: "1rem" }} />
-                                <Typography variant="caption">
-                                    {blog.viewCount || 0} lượt xem
-                                </Typography>
-                            </Stack>
-                            <Stack direction="row" alignItems="center" spacing={0.5}>
-                                <CommentIcon sx={{ fontSize: "1rem" }} />
-                                <Typography variant="caption">
-                                    {blog.commentCount || comments.length} bình luận
-                                </Typography>
-                            </Stack>
-                            <Stack direction="row" alignItems="center" spacing={0.5}>
-                                <StarIcon
-                                    sx={{ fontSize: "1.1rem", color: "warning.main" }}
-                                />
-                                <Typography variant="caption" sx={{ fontWeight: 500 }}>
-                                    {currentBlogRating.toFixed(1)}/5
-                                </Typography>
-                            </Stack>
-                        </Stack>
-
-                        {coverImage.url !== DEFAULT_POST_IMAGE_URL && (
-                            <Box className={styles.blogCoverImage}>
-                                <CardMedia
-                                    component="img"
-                                    image={coverImage.url}
-                                    alt={coverImage.caption || blog.title}
-                                />
-                                {coverImage.caption && (
-                                    <Typography
-                                        variant="caption"
-                                        component="p"
-                                        className={styles.blogCoverCaption}
-                                    >
-                                        {coverImage.caption}
-                                    </Typography>
-                                )}
-                            </Box>
-                        )}
-
-                        <Typography variant="subtitle1" className={styles.blogSummary}>
-                            {blog.summary || blog.excerpt}
-                        </Typography>
-
-                        <Box
-                            className={`${styles.blogContent} blog-post-content`}
-                            dangerouslySetInnerHTML={{
-                                __html: blog.contentWithIds || blog.content || "",
-                            }}
-                        />
-
-                        {embedVideoUrl && (
-                            <MotionBox
-                                className={styles.blogVideoSection}
-                                variants={itemVariants}
+        <ThemeProvider theme={elegantTheme}>
+            <CssBaseline />
+            <Container className={styles.blogDetailWrapper} maxWidth="xl">
+                <Grid container spacing={4} className={styles.layoutContainer}>
+                    <Grid item xs={12} md={8}>
+                        <Stack spacing={4}>
+                            {/* --- KHỐI BÀI VIẾT --- */}
+                            <MotionPaper
+                                className={styles.contentBlock}
+                                variants={sectionVariants}
+                                initial="hidden"
+                                animate="visible"
                             >
-                                <Typography
-                                    variant="h5"
-                                    gutterBottom
-                                    className={styles.blogVideoTitle}
-                                >
-                                    <PlayCircleOutlineIcon className={styles.blogVideoIcon} />{" "}
-                                    Video
+                                <Typography variant="h1" component="h1" gutterBottom>
+                                    {blog.title}
                                 </Typography>
-                                <Box className={styles.blogVideoEmbedWrapper}>
-                                    <iframe
-                                        src={embedVideoUrl}
-                                        title={blog.video?.caption || blog.title}
-                                        frameBorder="0"
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                        allowFullScreen
-                                    />
-                                </Box>
-                                {blog.video?.caption && (
-                                    <Typography
-                                        variant="caption"
-                                        align="center"
-                                        className={styles.blogVideoCaption}
-                                    >
-                                        {blog.video.caption}
-                                    </Typography>
-                                )}
-                            </MotionBox>
-                        )}
 
-                        {blog.tags?.length > 0 && (
-                            <Box className={styles.blogTagWrapper}>
-                                <Typography variant="h6" gutterBottom>
-                                    Thẻ:
-                                </Typography>
-                                <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
-                                    {blog.tags.map((tag, index) => (
-                                        <Chip
-                                            key={index}
-                                            label={tag}
-                                            component="a"
-                                            href={`/blog?tag=${encodeURIComponent(
-                                                tag.toLowerCase()
-                                            )}`}
-                                            clickable
-                                            variant="outlined"
-                                            size="medium"
-                                            className={styles.blogTagChip}
-                                        />
-                                    ))}
+                                <Stack direction="row" spacing={1.5} flexWrap="wrap" useFlexGap className={styles.blogMeta}>
+                                    <Stack direction="row" alignItems="center" spacing={1}>
+                                        <Avatar src={blog.authorImage} sx={{ width: 28, height: 28 }}>{blog.author?.[0]}</Avatar>
+                                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                                            {blog.author}
+                                        </Typography>
+                                    </Stack>
+                                    <Stack direction="row" alignItems="center" spacing={0.5}>
+                                        <CalendarTodayIcon sx={{ fontSize: "1rem" }} />
+                                        <Typography variant="caption">
+                                            {new Date(blog.createdAt).toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" })}
+                                        </Typography>
+                                    </Stack>
+                                    <Stack direction="row" alignItems="center" spacing={0.5}>
+                                        <VisibilityIcon sx={{ fontSize: "1rem" }} />
+                                        <Typography variant="caption">{blog.viewCount || 0} lượt xem</Typography>
+                                    </Stack>
+                                    <Stack direction="row" alignItems="center" spacing={0.5}>
+                                        <CommentIcon sx={{ fontSize: "1rem" }} />
+                                        <Typography variant="caption">{blog.commentCount || comments.length} bình luận</Typography>
+                                    </Stack>
+                                    <Stack direction="row" alignItems="center" spacing={0.5}>
+                                        <StarIcon sx={{ fontSize: "1.1rem", color: "warning.main" }} />
+                                        <Typography variant="caption" sx={{ fontWeight: 500 }}>{currentBlogRating.toFixed(1)}/5</Typography>
+                                    </Stack>
                                 </Stack>
-                            </Box>
-                        )}
 
-                        {blog.affiliateLinks?.length > 0 && (
-                            <MotionBox
-                                className={styles.blogAffiliateBox}
-                                variants={itemVariants}
-                            >
-                                <Typography
-                                    variant="h6"
-                                    gutterBottom
-                                    className={styles.blogAffiliateTitle}
-                                >
-                                    <ShoppingCartIcon className={styles.blogAffiliateIcon} />{" "}
-                                    Sản phẩm gợi ý trong bài
-                                </Typography>
-                                <Grid container spacing={2}>
-                                    {blog.affiliateLinks.map((link, index) => (
-                                        <Grid
-                                            item
-                                            xs={12}
-                                            sm={6}
-                                            key={link._id || `aff-${index}`}
+                                {coverImage.url !== DEFAULT_POST_IMAGE_URL && (
+                                    <Box className={styles.blogCoverImage}>
+                                        <CardMedia component="img" image={coverImage.url} alt={coverImage.caption || blog.title} />
+                                        {coverImage.caption && (
+                                            <Typography variant="caption" component="p" className={styles.blogCoverCaption}>
+                                                {coverImage.caption}
+                                            </Typography>
+                                        )}
+                                    </Box>
+                                )}
+
+                                {blog.summary && <Typography variant="subtitle1" className={styles.blogSummary}>{blog.summary}</Typography>}
+
+                                <Box
+                                    className={`${styles.blogContent} blog-post-content`}
+                                    dangerouslySetInnerHTML={{ __html: blog.contentWithIds || "" }}
+                                />
+
+                                {embedVideoUrl && (
+                                    <MotionBox
+                                        className={styles.blogVideoSection}
+                                        variants={itemVariants}
+                                    >
+                                        <Typography
+                                            variant="h5"
+                                            gutterBottom
+                                            className={styles.blogVideoTitle}
                                         >
-                                            <MotionCard
-                                                className={styles.blogAffiliateCard}
-                                                elevation={0}
-                                                variants={itemVariants}
+                                            <PlayCircleOutlineIcon className={styles.blogVideoIcon} />{" "}
+                                            Video
+                                        </Typography>
+                                        <Box className={styles.blogVideoEmbedWrapper}>
+                                            <iframe
+                                                src={embedVideoUrl}
+                                                title={blog.video?.caption || blog.title}
+                                                frameBorder="0"
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                                allowFullScreen
+                                            />
+                                        </Box>
+                                        {blog.video?.caption && (
+                                            <Typography
+                                                variant="caption"
+                                                align="center"
+                                                className={styles.blogVideoCaption}
                                             >
-                                                <CardContent
-                                                    className={styles.blogAffiliateCardContent}
+                                                {blog.video.caption}
+                                            </Typography>
+                                        )}
+                                    </MotionBox>
+                                )}
+
+                                {blog.tags?.length > 0 && (
+                                    <Box className={styles.blogTagWrapper}>
+                                        <Typography variant="h6" gutterBottom>
+                                            Thẻ:
+                                        </Typography>
+                                        <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
+                                            {blog.tags.map((tag, index) => (
+                                                <Chip
+                                                    key={index}
+                                                    label={tag}
+                                                    component="a"
+                                                    href={`/blog?tag=${encodeURIComponent(
+                                                        tag.toLowerCase()
+                                                    )}`}
+                                                    clickable
+                                                    variant="outlined"
+                                                    size="medium"
+                                                    className={styles.blogTagChip}
+                                                />
+                                            ))}
+                                        </Stack>
+                                    </Box>
+                                )}
+                            </MotionPaper>
+
+                            {/* --- KHỐI SẢN PHẨM GỢI Ý --- */}
+                            {blog.affiliateLinks?.length > 0 && (
+                                <MotionBox
+                                    className={styles.blogAffiliateBox}
+                                    variants={itemVariants}
+                                >
+                                    <Typography
+                                        variant="h6"
+                                        gutterBottom
+                                        className={styles.blogAffiliateTitle}
+                                    >
+                                        <ShoppingCartIcon className={styles.blogAffiliateIcon} />{" "}
+                                        Sản phẩm gợi ý trong bài
+                                    </Typography>
+                                    <Grid container spacing={2}>
+                                        {blog.affiliateLinks.map((link, index) => (
+                                            <Grid
+                                                item
+                                                xs={12}
+                                                sm={6}
+                                                key={link._id || `aff-${index}`}
+                                            >
+                                                <MotionCard
+                                                    className={styles.blogAffiliateCard}
+                                                    elevation={0}
+                                                    variants={itemVariants}
                                                 >
-                                                    <Typography
-                                                        variant="subtitle1"
-                                                        className={styles.blogAffiliateLabel}
+                                                    <CardContent
+                                                        className={styles.blogAffiliateCardContent}
                                                     >
-                                                        {link.label || "Sản phẩm"}
-                                                    </Typography>
-                                                </CardContent>
-                                                <CardActions className={styles.blogAffiliateActions}>
-                                                    <Button
-                                                        variant="contained"
-                                                        color="secondary"
-                                                        href={link.url}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        fullWidth
-                                                        onClick={() =>
-                                                            handleAffiliateLinkClick(link.url, link._id)
-                                                        }
-                                                        endIcon={<LaunchIcon />}
-                                                    >
-                                                        Xem Ngay
-                                                    </Button>
-                                                </CardActions>
-                                            </MotionCard>
-                                        </Grid>
-                                    ))}
-                                </Grid>
-                            </MotionBox>
-                        )}
-
-                        <Divider className={styles.blogDivider} />
-
-                        <MotionBox
-                            className={styles.blogRatingBox}
-                            variants={itemVariants}
-                        >
-                            <Typography variant="h6" gutterBottom>
-                                {" "}
-                                Bạn thấy bài viết này thế nào?
-                            </Typography>
-                            <Rating
-                                name="blog-post-rating"
-                                value={userRating}
-                                onChange={(e, newValue) =>
-                                    !ratingSubmitted && setUserRating(newValue)
-                                }
-                                readOnly={ratingSubmitted}
-                                size="large"
-                                emptyIcon={
-                                    <StarIcon style={{ opacity: 0.4 }} fontSize="inherit" />
-                                }
-                                className={styles.blogRatingStars}
-                            />
-                            {ratingError && (
-                                <Alert severity="error" onClose={() => setRatingError("")}>
-                                    {ratingError}
-                                </Alert>
-                            )}
-                            {ratingSuccess && (
-                                <Alert
-                                    severity="success"
-                                    onClose={() => setRatingSuccess("")}
-                                >
-                                    {ratingSuccess}
-                                </Alert>
-                            )}
-                            {!ratingSubmitted && (
-                                <Button
-                                    variant="contained"
-                                    onClick={handleRatingSubmit}
-                                    disabled={userRating === 0}
-                                >
-                                    Gửi đánh giá
-                                </Button>
-                            )}
-                        </MotionBox>
-
-                        <MotionPaper
-                            elevation={0}
-                            className={styles.blogCommentBox}
-                            variants={sectionVariants}
-                        >
-                            <Typography variant="h6" gutterBottom>
-                                <CommentIcon className={styles.blogCommentIcon} /> Bình luận (
-                                {blog.commentCount || comments.length})
-                            </Typography>
-                            <Box
-                                component="form"
-                                onSubmit={handleCommentSubmit}
-                                className={styles.blogCommentForm}
-                            >
-                                <Grid container spacing={2}>
-                                    <Grid item xs={12} sm={6}>
-                                        <TextField
-                                            fullWidth
-                                            label="Tên của bạn"
-                                            name="commenterName"
-                                            value={commenterName}
-                                            onChange={(e) => setCommenterName(e.target.value)}
-                                            required
-                                        />
+                                                        <Typography
+                                                            variant="subtitle1"
+                                                            className={styles.blogAffiliateLabel}
+                                                        >
+                                                            {link.label || "Sản phẩm"}
+                                                        </Typography>
+                                                    </CardContent>
+                                                    <CardActions className={styles.blogAffiliateActions}>
+                                                        <Button
+                                                            variant="contained"
+                                                            color="secondary"
+                                                            href={link.url}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            fullWidth
+                                                            onClick={() =>
+                                                                handleAffiliateLinkClick(link.url, link._id)
+                                                            }
+                                                            endIcon={<LaunchIcon />}
+                                                        >
+                                                            Xem Ngay
+                                                        </Button>
+                                                    </CardActions>
+                                                </MotionCard>
+                                            </Grid>
+                                        ))}
                                     </Grid>
-                                    <Grid item xs={12}>
+                                </MotionBox>
+                            )}
+
+                            {/* --- KHỐI ĐÁNH GIÁ --- */}
+                            <MotionPaper className={`${styles.contentBlock} ${styles.blogRatingBox}`} variants={itemVariants}>
+                                <Typography variant="h6" gutterBottom>Bạn thấy bài viết này thế nào?</Typography>
+                                <Rating
+                                    value={userRating}
+                                    onChange={(e, newValue) =>
+                                        !ratingSubmitted && setUserRating(newValue)
+                                    }
+                                    readOnly={ratingSubmitted}
+                                    size="large"
+                                />
+                                {ratingError && (
+                                    <Alert severity="error" onClose={() => setRatingError("")}>
+                                        {ratingError}
+                                    </Alert>
+                                )}
+                                {ratingSuccess && (
+                                    <Alert
+                                        severity="success"
+                                        onClose={() => setRatingSuccess("")}
+                                    >
+                                        {ratingSuccess}
+                                    </Alert>
+                                )}
+                                {!ratingSubmitted && <Button variant="contained" onClick={handleRatingSubmit} disabled={userRating === 0} sx={{ mt: 2 }}>Gửi đánh giá</Button>}
+                            </MotionPaper>
+
+
+                            <MotionPaper className={styles.contentBlock} variants={sectionVariants}>
+                                <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <CommentIcon /> Bình luận ({blog.commentCount || comments.length})
+                                </Typography>
+
+                                {/* FORM BÌNH LUẬN MỚI */}
+                                <Box component="form" onSubmit={handleCommentSubmit} className={styles.commentForm}>
+                                    <Stack direction="row" spacing={2} alignItems="flex-start">
+                                        <Avatar sx={{ mt: 1, bgcolor: 'primary.main' }}>
+                                            {commenterName ? commenterName.charAt(0).toUpperCase() : '?'}
+                                        </Avatar>
                                         <TextField
                                             fullWidth
                                             label="Viết bình luận..."
-                                            name="newComment"
                                             value={newComment}
                                             onChange={(e) => setNewComment(e.target.value)}
-                                            required
                                             multiline
                                             rows={3}
+                                            variant="outlined"
                                         />
-                                    </Grid>
-                                    {commentError && (
-                                        <Grid item xs={12}>
-                                            <Alert
-                                                severity="error"
-                                                onClose={() => setCommentError("")}
-                                            >
-                                                {commentError}
-                                            </Alert>
-                                        </Grid>
-                                    )}
-                                    {commentSuccess && (
-                                        <Grid item xs={12}>
-                                            <Alert
-                                                severity="success"
-                                                onClose={() => setCommentSuccess("")}
-                                            >
-                                                {commentSuccess}
-                                            </Alert>
-                                        </Grid>
-                                    )}
-                                    <Grid item xs={12}>
+                                    </Stack>
+                                    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="space-between" alignItems="center" mt={2}>
+                                        <TextField
+                                            label="Tên của bạn"
+                                            value={commenterName}
+                                            onChange={(e) => setCommenterName(e.target.value)}
+                                            variant="outlined"
+                                            size="small"
+                                            required
+                                            sx={{ minWidth: { sm: 200 } }}
+                                        />
                                         <LoadingButton
                                             type="submit"
                                             loading={isSubmittingComment}
@@ -656,159 +604,181 @@ function BlogDetailWrapper() {
                                         >
                                             Gửi bình luận
                                         </LoadingButton>
-                                    </Grid>
-                                </Grid>
-                            </Box>
-                            <Divider />
-                            {comments.length > 0 ? (
-                                <List>
-                                    {comments.map((comment, index) => (
-                                        <React.Fragment key={comment._id || `comment-${index}`}>
-                                            <ListItem alignItems="flex-start">
+                                    </Stack>
+                                    {commentError && <Alert severity="error" sx={{ mt: 2 }}>{commentError}</Alert>}
+                                    {commentSuccess && <Alert severity="success" sx={{ mt: 2 }}>{commentSuccess}</Alert>}
+                                </Box>
+
+                                <Divider sx={{ my: 4 }} />
+
+                                {/* DANH SÁCH BÌNH LUẬN */}
+                                {comments.length > 0 ? (
+                                    <Stack spacing={3}>
+                                        {comments.map((comment) => (
+                                            <Stack key={comment._id} direction="row" spacing={2} className={styles.commentItem}>
                                                 <ListItemAvatar>
                                                     <Avatar src={comment.avatar || undefined}>
-                                                        {comment.name
-                                                            ? comment.name.charAt(0).toUpperCase()
-                                                            : "A"}
+                                                        {comment.name ? comment.name.charAt(0).toUpperCase() : "A"}
                                                     </Avatar>
                                                 </ListItemAvatar>
-                                                <ListItemText
-                                                    primary={
-                                                        <Typography className={styles.blogCommentName}>
-                                                            {comment.name || "Ẩn danh"}
-                                                        </Typography>
-                                                    }
-                                                    secondary={
-                                                        <>
-                                                            <Typography
-                                                                className={styles.blogCommentContent}
-                                                            >
-                                                                {comment.content || "..."}
-                                                            </Typography>
-                                                            <Typography
-                                                                variant="caption"
-                                                                className={styles.blogCommentTimestamp}
-                                                            >
-                                                                {new Date(comment.createdAt).toLocaleString(
-                                                                    "vi-VN",
-                                                                    {
-                                                                        day: "2-digit",
-                                                                        month: "2-digit",
-                                                                        year: "numeric",
-                                                                        hour: "2-digit",
-                                                                        minute: "2-digit",
-                                                                    }
-                                                                )}
-                                                            </Typography>
-                                                        </>
-                                                    }
-                                                />
-                                            </ListItem>
-                                            {index < comments.length - 1 && (
-                                                <Divider variant="inset" component="li" />
-                                            )}
-                                        </React.Fragment>
-                                    ))}
-                                </List>
-                            ) : (
-                                <Alert severity="info">
-                                    Chưa có bình luận. Hãy là người đầu tiên!
-                                </Alert>
-                            )}
-                            {totalCommentPages > 1 && (
-                                <Stack alignItems="center">
-                                    <Pagination
-                                        count={totalCommentPages}
-                                        page={commentPage}
-                                        onChange={(e, val) => setCommentPage(val)}
-                                        color="primary"
-                                    />
-                                </Stack>
-                            )}
-                        </MotionPaper>
-                    </MotionPaper>
-                </Grid>
+                                                <Box>
+                                                    <Typography component="span" sx={{ fontWeight: 600, color: 'text.primary' }}>
+                                                        {comment.name || "Ẩn danh"}
+                                                    </Typography>
+                                                    <Typography variant="caption" sx={{ color: 'text.secondary', ml: 1.5 }}>
+                                                        {new Date(comment.createdAt).toLocaleString("vi-VN", { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                                    </Typography>
+                                                    <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5, whiteSpace: 'pre-wrap' }}>
+                                                        {comment.content}
+                                                    </Typography>
+                                                </Box>
+                                            </Stack>
+                                        ))}
+                                    </Stack>
+                                ) : (
+                                    <Alert severity="info" variant="outlined">Chưa có bình luận nào. Hãy là người đầu tiên!</Alert>
+                                )}
 
-                <Grid item xs={12} md={5}>
-                    <MotionBox
-                        className={styles.blogStickySidebar}
-                        variants={sectionVariants}
-                        initial="hidden"
-                        animate="visible"
-                    >
-                        {toc.length > 0 && (
-                            <Paper className={styles.blogSidebarPaper} elevation={2}>
-                                <Typography variant="h6" gutterBottom>
-                                    Mục lục bài viết
-                                </Typography>
-                                <List
-                                    dense
-                                    component="nav"
-                                    sx={{ maxHeight: "calc(100vh - 120px)", overflowY: "auto" }}
-                                >
-                                    {toc.map((item) => (
-                                        <ListItem key={item.id} disablePadding>
-                                            <Link
-                                                href={`#${item.id}`}
-                                                underline="none"
-                                                sx={{
-                                                    width: "100%",
-                                                    py: 0.7,
-                                                    pl: item.level === "h3" ? 2.5 : 0.5,
-                                                }}
-                                            >
-                                                {item.text}
-                                            </Link>
-                                        </ListItem>
-                                    ))}
-                                </List>
-                            </Paper>
-                        )}
+                                {totalCommentPages > 1 && (
+                                    <Stack alignItems="center" sx={{ mt: 4 }}>
+                                        <Pagination
+                                            count={totalCommentPages}
+                                            page={commentPage}
+                                            onChange={(e, val) => setCommentPage(val)}
+                                            color="primary"
+                                        />
+                                    </Stack>
+                                )}
+                            </MotionPaper>
 
-                        {(relatedBlogs.length > 0 || featuredBlogs.length > 0) && (
-                            <Stack spacing={3} className={styles.blogSidebarSection}>
+                        </Stack>
+                    </Grid>
+
+                    {/* === CỘT SIDEBAR (BÊN PHẢI) === */}
+                    <Grid item xs={12} md={4}>
+                        {/* Box này sẽ dính lại khi cuộn trang */}
+                        <Box className={styles.blogStickySidebar}>
+                            <Stack spacing={3}>
+                                {/* Phần mục lục */}
+                                <TableOfContents />
+                                {/* SIDEBAR BÀI VIẾT LIÊN QUAN */}
                                 {relatedBlogs.length > 0 && (
-                                    <Paper className={styles.blogSidebarPaper} elevation={2}>
-                                        <Typography variant="h6">Bài viết liên quan</Typography>
-                                        <Stack spacing={1.5}>
-                                            {relatedBlogs.map((b) => (
-                                                <Link
-                                                    key={b._id}
-                                                    component={RouterLink}
-                                                    to={`/blog/${b.slug}`}
-                                                    underline="hover"
-                                                >
-                                                    • {b.title}
-                                                </Link>
-                                            ))}
-                                        </Stack>
-                                    </Paper>
+                                    <MotionPaper className={styles.sidebarBlock} variants={sectionVariants}>
+                                        <Card variant="outlined" sx={{ p: 2, minWidth: 280, maxWidth: '100%' }}>
+                                            <Typography variant="h6" gutterBottom>Bài viết liên quan</Typography>
+                                            <Divider sx={{ mb: 1 }} />
+                                            <Stack spacing={1}>
+                                                {relatedBlogs.map((b, index) => (
+                                                    <Box key={b._id}>
+                                                        <Box
+                                                            component={RouterLink}
+                                                            to={`/blog/${b.slug}`}
+                                                            sx={{
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                textDecoration: 'none',
+                                                                color: 'inherit',
+                                                                py: 1,
+                                                                transition: 'all 0.2s',
+                                                                '&:hover': {
+                                                                    color: 'primary.main',
+                                                                },
+                                                            }}
+                                                        >
+                                                            <Avatar
+                                                                variant="rounded"
+                                                                src={b.images?.[0]?.url || '/assets/images/placeholder.png'}
+                                                                sx={{ width: 56, height: 42, mr: 2 }}
+                                                            />
+                                                            <Typography variant="body2" fontWeight={500} noWrap>
+                                                                {b.title}
+                                                            </Typography>
+                                                        </Box>
+                                                        {index < relatedBlogs.length - 1 && <Divider />}
+                                                    </Box>
+                                                ))}
+                                            </Stack>
+                                        </Card>
+                                    </MotionPaper>
                                 )}
 
+                                {/* SIDEBAR BÀI VIẾT NỔI BẬT */}
                                 {featuredBlogs.length > 0 && (
-                                    <Paper className={styles.blogSidebarPaper} elevation={2}>
-                                        <Typography variant="h6">Nổi bật</Typography>
-                                        <Stack spacing={1.5}>
-                                            {featuredBlogs.map((b) => (
-                                                <Link
-                                                    key={b._id}
-                                                    component={RouterLink}
-                                                    to={`/blog/${b.slug}`}
-                                                    underline="hover"
-                                                >
-                                                    • {b.title}
-                                                </Link>
-                                            ))}
-                                        </Stack>
-                                    </Paper>
+                                    <MotionPaper className={styles.sidebarBlock} variants={sectionVariants}>
+                                        <Card variant="outlined" sx={{ p: 2, minWidth: 280, maxWidth: '100%' }}>
+                                            <Typography variant="h6" gutterBottom>Nổi bật</Typography>
+                                            <Divider sx={{ mb: 1 }} />
+                                            <Stack spacing={1}>
+                                                {featuredBlogs.map((b, index) => (
+                                                    <Box key={b._id}>
+                                                        <Box
+                                                            component={RouterLink}
+                                                            to={`/blog/${b.slug}`}
+                                                            sx={{
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                textDecoration: 'none',
+                                                                color: 'inherit',
+                                                                py: 1,
+                                                                transition: 'all 0.2s',
+                                                                '&:hover': {
+                                                                    color: 'primary.main',
+                                                                },
+                                                            }}
+                                                        >
+                                                            <Avatar
+                                                                variant="rounded"
+                                                                src={b.images?.[0]?.url || '/assets/images/placeholder.png'}
+                                                                sx={{ width: 56, height: 42, mr: 2 }}
+                                                            />
+                                                            <Typography variant="body2" fontWeight={500} noWrap>
+                                                                {b.title}
+                                                            </Typography>
+                                                        </Box>
+                                                        {index < featuredBlogs.length - 1 && <Divider />}
+                                                    </Box>
+                                                ))}
+                                            </Stack>
+                                        </Card>
+                                    </MotionPaper>
                                 )}
+
+                                <Box sx={{ mt: 2 }}>
+                                    <Typography variant="subtitle2" gutterBottom>Chia sẻ / Nguồn:</Typography>
+                                    <Stack direction="row" spacing={1} flexWrap="wrap">
+                                        {[
+                                            { label: 'Shopee', color: '#ee4d2d' },
+                                            { label: 'Lazada', color: '#1a9cb7' },
+                                            { label: 'Facebook', color: '#1877f2' },
+                                            { label: 'Tiki', color: '#189eff' },
+                                        ].map((tag) => (
+                                            <Chip
+                                                key={tag.label}
+                                                label={tag.label}
+                                                sx={{
+                                                    bgcolor: tag.color,
+                                                    color: 'white',
+                                                    fontWeight: 500,
+                                                    borderRadius: '9999px',
+                                                    px: 1.5,
+                                                    py: 0.5,
+                                                    fontSize: '0.75rem',
+                                                    boxShadow: 1,
+                                                    textTransform: 'capitalize',
+                                                }}
+                                            />
+                                        ))}
+                                    </Stack>
+                                </Box>
+
+
                             </Stack>
-                        )}
-                    </MotionBox>
+                        </Box>
+                    </Grid>
                 </Grid>
-            </Grid>
-        </Container>
-    )
+            </Container>
+        </ThemeProvider>
+    );
 }
 
 export default BlogDetailWrapper

@@ -46,6 +46,7 @@ import WaitingForContentPage from "../../components/404/WaitingForContentPage";
 import styles from "../../page/Guest/BlogDetails.module.scss";
 import { elegantTheme, itemVariants, sectionVariants } from "../../components/BlogDetails/theme";
 import TableOfContents from "./TableOfContents";
+import ShareSources from "./ShareSources";
 
 const MotionBox = motion(Box);
 const MotionPaper = motion(Paper);
@@ -215,13 +216,17 @@ function BlogDetailWrapper() {
                         .replace(/^## (.*$)/gim, '<h2>$1</h2>')
                         .replace(/^# (.*$)/gim, '<h1>$1</h1>')
                         .replace(/!\[.*?\]\((.*?)\)/gim, '<img src="$1" alt="image" />')
+                        .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/gim, '<a href="$2" target="_blank" rel="noopener noreferrer" style="color: #1976d2; text-decoration: underline;">$1</a>')
+                        // .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/gim,
+                        //     '<a href="$2" target="_blank" rel="noopener noreferrer" style="color: #1976d2; text-decoration: underline; display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; word-break: break-word;">$1</a>'
+                        // )
                         .replace(/\n{2,}/g, '<br/><br/>');
 
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(html, "text/html");
 
                     const headings = [];
-                    doc.querySelectorAll("h1, h2, h3").forEach((el) => {
+                    doc.querySelectorAll("h1, h2, h3, h4, h5, h6").forEach((el) => {
                         const text = el.textContent?.trim() || "no-title";
                         const slug = text
                             .toLowerCase()
@@ -270,6 +275,22 @@ function BlogDetailWrapper() {
         };
         fetchBlogDetail();
     }, [slug, fetchBlogRatings]);
+
+    useEffect(() => {
+        const handleClick = (e) => {
+            const target = e.target;
+            if (target.tagName === 'A' && target.getAttribute('href')?.startsWith('#')) {
+                e.preventDefault();
+                const id = target.getAttribute('href').slice(1);
+                const el = document.getElementById(id);
+                if (el) {
+                    el.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        };
+        document.addEventListener('click', handleClick);
+        return () => document.removeEventListener('click', handleClick);
+    }, []);
 
     useEffect(() => {
         if (blog?._id) {
@@ -380,8 +401,10 @@ function BlogDetailWrapper() {
         <ThemeProvider theme={elegantTheme}>
             <CssBaseline />
             <Container className={styles.blogDetailWrapper} maxWidth="xl">
-                <Grid container spacing={4} className={styles.layoutContainer}>
-                    <Grid item xs={12} md={8}>
+                <Box display="flex" flexDirection={{ xs: 'column', md: 'row' }} alignItems="flex-start" gap={4}>
+
+                    {/* === CỘT TRÁI: BÀI VIẾT CHÍNH === */}
+                    <Box flex={1} minWidth={0}>
                         <Stack spacing={4}>
                             {/* --- KHỐI BÀI VIẾT --- */}
                             <MotionPaper
@@ -583,6 +606,7 @@ function BlogDetailWrapper() {
                             </MotionPaper>
 
 
+                            {/* --- KHỐI BÌNH LUẬN --- */}
                             <MotionPaper className={styles.contentBlock} variants={sectionVariants}>
                                 <Typography variant="h5" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                     <CommentIcon /> Bình luận ({blog.commentCount || comments.length})
@@ -668,132 +692,105 @@ function BlogDetailWrapper() {
                                     </Stack>
                                 )}
                             </MotionPaper>
-
                         </Stack>
-                    </Grid>
+                    </Box>
 
-                    {/* === CỘT SIDEBAR (BÊN PHẢI) === */}
-                    <Grid item xs={12} md={4}>
-                        {/* Box này sẽ dính lại khi cuộn trang */}
-                        <Box className={styles.blogStickySidebar}>
-                            <Stack spacing={3}>
-                                {/* Phần mục lục */}
-                                <TableOfContents />
-                                {/* SIDEBAR BÀI VIẾT LIÊN QUAN */}
-                                {relatedBlogs.length > 0 && (
-                                    <MotionPaper className={styles.sidebarBlock} variants={sectionVariants}>
-                                        <Card variant="outlined" sx={{ p: 2, minWidth: 280, maxWidth: '100%' }}>
-                                            <Typography variant="h6" gutterBottom>Bài viết liên quan</Typography>
-                                            <Divider sx={{ mb: 1 }} />
-                                            <Stack spacing={1}>
-                                                {relatedBlogs.map((b, index) => (
-                                                    <Box key={b._id}>
-                                                        <Box
-                                                            component={RouterLink}
-                                                            to={`/blog/${b.slug}`}
-                                                            sx={{
-                                                                display: 'flex',
-                                                                alignItems: 'center',
-                                                                textDecoration: 'none',
-                                                                color: 'inherit',
-                                                                py: 1,
-                                                                transition: 'all 0.2s',
-                                                                '&:hover': {
-                                                                    color: 'primary.main',
-                                                                },
-                                                            }}
-                                                        >
-                                                            <Avatar
-                                                                variant="rounded"
-                                                                src={b.images?.[0]?.url || '/assets/images/placeholder.png'}
-                                                                sx={{ width: 56, height: 42, mr: 2 }}
-                                                            />
-                                                            <Typography variant="body2" fontWeight={500} noWrap>
-                                                                {b.title}
-                                                            </Typography>
-                                                        </Box>
-                                                        {index < relatedBlogs.length - 1 && <Divider />}
+                    {/* === CỘT PHẢI: SIDEBAR === */}
+                    <Box
+                        width={{ xs: '100%', md: 320 }}
+                        sx={{ position: 'sticky', top: '96px', alignSelf: 'flex-start', flexShrink: 0 }}
+                    >
+                        <Stack spacing={3}>
+                            {/* Phần mục lục */}
+                            <TableOfContents toc={toc} />
+
+                            {/* SIDEBAR BÀI VIẾT LIÊN QUAN */}
+                            {relatedBlogs.length > 0 && (
+                                <MotionPaper className={styles.sidebarBlock} variants={sectionVariants}>
+                                    <Card variant="outlined" sx={{ p: 2, minWidth: 280, maxWidth: '100%' }}>
+                                        <Typography variant="h6" gutterBottom>Bài viết liên quan</Typography>
+                                        <Divider sx={{ mb: 1 }} />
+                                        <Stack spacing={1}>
+                                            {relatedBlogs.map((b, index) => (
+                                                <Box key={b._id}>
+                                                    <Box
+                                                        component={RouterLink}
+                                                        to={`/blog/${b.slug}`}
+                                                        sx={{
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            textDecoration: 'none',
+                                                            color: 'inherit',
+                                                            py: 1,
+                                                            transition: 'all 0.2s',
+                                                            '&:hover': {
+                                                                color: 'primary.main',
+                                                            },
+                                                        }}
+                                                    >
+                                                        <Avatar
+                                                            variant="rounded"
+                                                            src={b.images?.[0]?.url || '/assets/images/placeholder.png'}
+                                                            sx={{ width: 56, height: 42, mr: 2 }}
+                                                        />
+                                                        <Typography variant="body2" fontWeight={500} noWrap>
+                                                            {b.title}
+                                                        </Typography>
                                                     </Box>
-                                                ))}
-                                            </Stack>
-                                        </Card>
-                                    </MotionPaper>
-                                )}
+                                                    {index < relatedBlogs.length - 1 && <Divider />}
+                                                </Box>
+                                            ))}
+                                        </Stack>
+                                    </Card>
+                                </MotionPaper>
+                            )}
 
-                                {/* SIDEBAR BÀI VIẾT NỔI BẬT */}
-                                {featuredBlogs.length > 0 && (
-                                    <MotionPaper className={styles.sidebarBlock} variants={sectionVariants}>
-                                        <Card variant="outlined" sx={{ p: 2, minWidth: 280, maxWidth: '100%' }}>
-                                            <Typography variant="h6" gutterBottom>Nổi bật</Typography>
-                                            <Divider sx={{ mb: 1 }} />
-                                            <Stack spacing={1}>
-                                                {featuredBlogs.map((b, index) => (
-                                                    <Box key={b._id}>
-                                                        <Box
-                                                            component={RouterLink}
-                                                            to={`/blog/${b.slug}`}
-                                                            sx={{
-                                                                display: 'flex',
-                                                                alignItems: 'center',
-                                                                textDecoration: 'none',
-                                                                color: 'inherit',
-                                                                py: 1,
-                                                                transition: 'all 0.2s',
-                                                                '&:hover': {
-                                                                    color: 'primary.main',
-                                                                },
-                                                            }}
-                                                        >
-                                                            <Avatar
-                                                                variant="rounded"
-                                                                src={b.images?.[0]?.url || '/assets/images/placeholder.png'}
-                                                                sx={{ width: 56, height: 42, mr: 2 }}
-                                                            />
-                                                            <Typography variant="body2" fontWeight={500} noWrap>
-                                                                {b.title}
-                                                            </Typography>
-                                                        </Box>
-                                                        {index < featuredBlogs.length - 1 && <Divider />}
+                            {/* SIDEBAR BÀI VIẾT NỔI BẬT */}
+                            {featuredBlogs.length > 0 && (
+                                <MotionPaper className={styles.sidebarBlock} variants={sectionVariants}>
+                                    <Card variant="outlined" sx={{ p: 2, minWidth: 280, maxWidth: '100%' }}>
+                                        <Typography variant="h6" gutterBottom>Nổi bật</Typography>
+                                        <Divider sx={{ mb: 1 }} />
+                                        <Stack spacing={1}>
+                                            {featuredBlogs.map((b, index) => (
+                                                <Box key={b._id}>
+                                                    <Box
+                                                        component={RouterLink}
+                                                        to={`/blog/${b.slug}`}
+                                                        sx={{
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            textDecoration: 'none',
+                                                            color: 'inherit',
+                                                            py: 1,
+                                                            transition: 'all 0.2s',
+                                                            '&:hover': {
+                                                                color: 'primary.main',
+                                                            },
+                                                        }}
+                                                    >
+                                                        <Avatar
+                                                            variant="rounded"
+                                                            src={b.images?.[0]?.url || '/assets/images/placeholder.png'}
+                                                            sx={{ width: 56, height: 42, mr: 2 }}
+                                                        />
+                                                        <Typography variant="body2" fontWeight={500} noWrap>
+                                                            {b.title}
+                                                        </Typography>
                                                     </Box>
-                                                ))}
-                                            </Stack>
-                                        </Card>
-                                    </MotionPaper>
-                                )}
+                                                    {index < featuredBlogs.length - 1 && <Divider />}
+                                                </Box>
+                                            ))}
+                                        </Stack>
+                                    </Card>
+                                </MotionPaper>
+                            )}
 
-                                <Box sx={{ mt: 2 }}>
-                                    <Typography variant="subtitle2" gutterBottom>Chia sẻ / Nguồn:</Typography>
-                                    <Stack direction="row" spacing={1} flexWrap="wrap">
-                                        {[
-                                            { label: 'Shopee', color: '#ee4d2d' },
-                                            { label: 'Lazada', color: '#1a9cb7' },
-                                            { label: 'Facebook', color: '#1877f2' },
-                                            { label: 'Tiki', color: '#189eff' },
-                                        ].map((tag) => (
-                                            <Chip
-                                                key={tag.label}
-                                                label={tag.label}
-                                                sx={{
-                                                    bgcolor: tag.color,
-                                                    color: 'white',
-                                                    fontWeight: 500,
-                                                    borderRadius: '9999px',
-                                                    px: 1.5,
-                                                    py: 0.5,
-                                                    fontSize: '0.75rem',
-                                                    boxShadow: 1,
-                                                    textTransform: 'capitalize',
-                                                }}
-                                            />
-                                        ))}
-                                    </Stack>
-                                </Box>
-
-
-                            </Stack>
-                        </Box>
-                    </Grid>
-                </Grid>
+                            {/* Thẻ chia sẻ/nguồn */}
+                            <ShareSources />
+                        </Stack>
+                    </Box>
+                </Box>
             </Container>
         </ThemeProvider>
     );

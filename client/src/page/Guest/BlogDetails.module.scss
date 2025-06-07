@@ -160,6 +160,17 @@
   transform: translateY(-8px);
   box-shadow: 0 12px 24px rgba(229, 163, 179, 0.2);
 }
+.blogStickySidebar {
+  height: fit-content;
+}
+
+.layoutContainer {
+  align-items: flex-start;
+}
+
+.MuiGrid-item:nth-of-type(1) {
+  min-height: 100%;
+}
 
 /* --- THAY ĐỔI: Bố cục rộng hơn --- */
 .blogRatingBox {

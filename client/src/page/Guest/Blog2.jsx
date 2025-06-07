@@ -386,6 +386,7 @@ export default function BlogPageWithCarouselAndFixedTags() {
                             </TextField>
                         </Box>
                     </Container>
+
                 </Paper>
 
                 {/* Mobile Drawer */}

@@ -36,7 +36,6 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { BlogCard } from './../../components/Blog/BlogCard/BlogCard';
-import { BlogPageFooter } from '../../components/Blog/BlogPageFooter/BlogPageFooter';
 import WaitingForContentPage from '../../components/404/WaitingForContentPage';
 import { CircularProgress, Alert, Button, Pagination } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';

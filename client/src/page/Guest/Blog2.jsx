@@ -48,16 +48,16 @@ import {
 } from "swiper/modules";
 import axios from "axios";
 
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-import { BlogCard } from "./../../components/Blog/BlogCard/BlogCard";
-import { BlogPageFooter } from "../../components/Blog/BlogPageFooter/BlogPageFooter";
-import WaitingForContentPage from "../../components/404/WaitingForContentPage";
-import { CircularProgress, Alert, Button, Pagination } from "@mui/material";
-import { Link as RouterLink } from "react-router-dom";
-import { GridBlogCard } from "../../components/Blog/BlogCard/GridBlogCard";
-import { BlogSidebar } from "../../components/Blog/BlogSidebar/BlogSidebar";
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import { BlogCard } from './../../components/Blog/BlogCard/BlogCard';
+import WaitingForContentPage from '../../components/404/WaitingForContentPage';
+import { CircularProgress, Alert, Button, Pagination } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
+import { GridBlogCard } from '../../components/Blog/BlogCard/GridBlogCard';
+import { BlogSidebar } from '../../components/Blog/BlogSidebar/BlogSidebar';
+import Footer from './../../components/HomePage/Footer/Footer';
 
 const paletteConfigFromOldUI = {
   primary: { main: "#E5A3B3", light: "#F8C8D4", dark: "#BF8A9B" },
@@ -1005,50 +1005,14 @@ export default function BlogPageWithCarouselAndFixedTags() {
           )}
         </Container>
 
-        {/* Footer and FABs */}
-        <BlogPageFooter />
-        <Box
-          sx={{
-            position: "fixed",
-            bottom: "20px",
-            right: "20px",
-            display: "flex",
-            flexDirection: "column",
-            gap: 1.5,
-            zIndex: 1200,
-          }}
-        >
-          <Fab color="primary" size="medium" aria-label="call">
-            <CallIcon />
-          </Fab>
-          <Fab
-            sx={{
-              bgcolor: "secondary.main",
-              color: "white",
-              "&:hover": { bgcolor: "secondary.dark" },
-            }}
-            size="medium"
-            aria-label="chat"
-          >
-            <ChatIcon />
-          </Fab>
-          <Fab
-            sx={{
-              bgcolor: alpha(
-                elegantThemeWithOldColors.palette.text.secondary,
-                0.7
-              ),
-              color: "white",
-              "&:hover": { bgcolor: "text.primary" },
-            }}
-            size="small"
-            aria-label="scroll-to-top"
-            onClick={scrollToTop}
-          >
-            <ArrowUpwardIcon fontSize="small" />
-          </Fab>
-        </Box>
-      </Box>
-    </ThemeProvider>
-  );
+                {/* Footer and FABs */}
+                <Footer />
+                <Box sx={{ position: 'fixed', bottom: '20px', right: '20px', display: 'flex', flexDirection: 'column', gap: 1.5, zIndex: 1200 }}>
+                    <Fab color="primary" size="medium" aria-label="call"><CallIcon /></Fab>
+                    <Fab sx={{ bgcolor: 'secondary.main', color: 'white', '&:hover': { bgcolor: 'secondary.dark' } }} size="medium" aria-label="chat"><ChatIcon /></Fab>
+                    <Fab sx={{ bgcolor: alpha(elegantThemeWithOldColors.palette.text.secondary, 0.7), color: 'white', '&:hover': { bgcolor: 'text.primary' } }} size="small" aria-label="scroll-to-top" onClick={scrollToTop}><ArrowUpwardIcon fontSize="small" /></Fab>
+                </Box>
+            </Box>
+        </ThemeProvider>
+    );
 }

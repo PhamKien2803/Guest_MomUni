@@ -62,43 +62,17 @@ const DEFAULT_POST_IMAGE_URL =
   "https://placehold.co/1200x550/E5A3B3/FFF7F5?text=MomUni+Blog";
 
 function BlogDetailWrapper() {
-  const { slug } = useParams();
-  const [blog, setBlog] = useState(null);
-  const [toc, setToc] = useState([
-    {
-      id: "gioi-thieu",
-      text: "1. Giới thiệu về chủ đề",
-      level: 1,
-    },
-    {
-      id: "nguyen-nhan",
-      text: "2. Nguyên nhân chính",
-      level: 1,
-    },
-    {
-      id: "nguyen-nhan-noi-bat",
-      text: "2.1. Nguyên nhân nổi bật",
-      level: 2,
-    },
-    {
-      id: "giai-phap",
-      text: "3. Các giải pháp đề xuất",
-      level: 1,
-    },
-    {
-      id: "ket-luan",
-      text: "4. Kết luận và khuyến nghị",
-      level: 1,
-    },
-  ]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [comments, setComments] = useState([]);
-  const [newComment, setNewComment] = useState("");
-  const [commenterName, setCommenterName] = useState("");
-  const [isSubmittingComment, setIsSubmittingComment] = useState(false);
-  const [commentError, setCommentError] = useState("");
-  const [commentSuccess, setCommentSuccess] = useState("");
+    const { slug } = useParams();
+    const [blog, setBlog] = useState(null);
+    const [toc, setToc] = useState([]);;
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [comments, setComments] = useState([]);
+    const [newComment, setNewComment] = useState("");
+    const [commenterName, setCommenterName] = useState("");
+    const [isSubmittingComment, setIsSubmittingComment] = useState(false);
+    const [commentError, setCommentError] = useState("");
+    const [commentSuccess, setCommentSuccess] = useState("");
 
   const [userRating, setUserRating] = useState(0);
   const [currentBlogRating, setCurrentBlogRating] = useState(0);

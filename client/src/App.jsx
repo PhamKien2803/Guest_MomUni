@@ -6,16 +6,6 @@ import Blog2 from "./page/Guest/Blog2";
 
 function App() {
   return (
-    // <BrowserRouter>
-    //   <Routes>
-    //     <Route path="/" element={<HomePage2 />} />
-    //     {/* <Route path="/blog" element={<BlogPageMUI />} /> */}
-    //     <Route path="/blog" element={<Blog2 />} />
-    //     <Route path="/blog/:slug" element={<BlogPageDetails />} />
-    //   </Routes>
-    // </BrowserRouter>
-
-
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Blog2 />} />

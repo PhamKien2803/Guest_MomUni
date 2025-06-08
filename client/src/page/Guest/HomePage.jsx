@@ -9,7 +9,7 @@ import { HeroSection } from '../../components/HomePage/HeroSection/HeroSection';
 import { FeaturesSection } from './../../components/HomePage/FeaturesSection/FeaturesSection';
 import { MotherhoodJourneySection } from '../../components/HomePage/MotherhoodJourneySection/MotherhoodJourneySection';
 import { BlogSection } from '../../components/HomePage/BlogSection/BlogSection';
-import { FooterWithForm } from '../../components/HomePage/FooterWithForm/FooterWithForm';
+import Footer from '../../components/HomePage/Footer/Footer';
 
 const elegantTheme = createTheme({
     palette: {
@@ -50,7 +50,7 @@ export default function HomePage2() {
                 <MotherhoodJourneySection />
                 <BlogSection />
             </main>
-            <FooterWithForm />
+            <Footer />
         </ThemeProvider>
     );
 }

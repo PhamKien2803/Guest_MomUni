@@ -3,9 +3,9 @@ import {
   CssBaseline,
 } from "@mui/material";
 import { Header } from "../../components/HomePage/Header/Header";
-import { BlogPageFooter } from "../../components/Blog/BlogPageFooter/BlogPageFooter";
 import { elegantTheme } from "../../components/BlogDetails/theme";
 import BlogDetailWrapper from "../../components/BlogDetails/BlogDetailWrapper";
+import Footer from "../../components/HomePage/Footer/Footer";
 
 export default function BlogDetailMUI() {
   return (
@@ -13,7 +13,7 @@ export default function BlogDetailMUI() {
       <CssBaseline />
       <Header style={{ padding: '0' }} />
       <BlogDetailWrapper />
-      <BlogPageFooter />
+      <Footer />
     </ThemeProvider>
   );
 }

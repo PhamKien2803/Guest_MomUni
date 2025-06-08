@@ -61,33 +61,7 @@ const DEFAULT_POST_IMAGE_URL =
 function BlogDetailWrapper() {
     const { slug } = useParams();
     const [blog, setBlog] = useState(null);
-    const [toc, setToc] = useState([
-        {
-            id: "gioi-thieu",
-            text: "1. Giới thiệu về chủ đề",
-            level: 1,
-        },
-        {
-            id: "nguyen-nhan",
-            text: "2. Nguyên nhân chính",
-            level: 1,
-        },
-        {
-            id: "nguyen-nhan-noi-bat",
-            text: "2.1. Nguyên nhân nổi bật",
-            level: 2,
-        },
-        {
-            id: "giai-phap",
-            text: "3. Các giải pháp đề xuất",
-            level: 1,
-        },
-        {
-            id: "ket-luan",
-            text: "4. Kết luận và khuyến nghị",
-            level: 1,
-        },
-    ]);;
+    const [toc, setToc] = useState([]);;
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [comments, setComments] = useState([]);

@@ -42,6 +42,7 @@ import { CircularProgress, Alert, Button, Pagination } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import { GridBlogCard } from '../../components/Blog/BlogCard/GridBlogCard';
 import { BlogSidebar } from '../../components/Blog/BlogSidebar/BlogSidebar';
+import Footer from './../../components/HomePage/Footer/Footer';
 
 const paletteConfigFromOldUI = {
     primary: { main: '#E5A3B3', light: '#F8C8D4', dark: '#BF8A9B' },
@@ -504,7 +505,7 @@ export default function BlogPageWithCarouselAndFixedTags() {
                 </Container>
 
                 {/* Footer and FABs */}
-                <BlogPageFooter />
+                <Footer />
                 <Box sx={{ position: 'fixed', bottom: '20px', right: '20px', display: 'flex', flexDirection: 'column', gap: 1.5, zIndex: 1200 }}>
                     <Fab color="primary" size="medium" aria-label="call"><CallIcon /></Fab>
                     <Fab sx={{ bgcolor: 'secondary.main', color: 'white', '&:hover': { bgcolor: 'secondary.dark' } }} size="medium" aria-label="chat"><ChatIcon /></Fab>

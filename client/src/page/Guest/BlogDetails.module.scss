@@ -63,7 +63,7 @@
 .blogContent {
   word-break: break-word;
   overflow-wrap: break-word;
-  max-width: 1140px; /* Tăng chiều rộng nội dung */
+  // max-width: 1140px; /* Tăng chiều rộng nội dung */
   margin: 0 auto;
 }
 
@@ -148,7 +148,7 @@
   border: 1px solid rgba(229, 163, 179, 0.2);
   padding: 24px;
   width: 100%;
-  max-width: 1140px; /* Tăng chiều rộng */
+  // max-width: 1140px; /* Tăng chiều rộng */
   margin: 0 auto;
   box-sizing: border-box;
   /* Thêm transition để hiệu ứng mượt mà */
@@ -179,7 +179,7 @@
   background-color: rgba(232, 168, 188, 0.15);
   border-radius: 12px;
   margin-top: 2rem;
-  max-width: 1140px; /* Tăng chiều rộng */
+  // max-width: 1140px; /* Tăng chiều rộng */
   margin-left: auto;
   margin-right: auto;
 }
@@ -222,7 +222,7 @@
 .blogCommentBox,
 .blogAffiliateBox,
 .blogTagWrapper {
-  max-width: 1140px; /* Tăng chiều rộng */
+  // max-width: 1140px; /* Tăng chiều rộng */
   margin-left: auto;
   margin-right: auto;
 }
@@ -230,7 +230,7 @@
 /* --- THAY ĐỔI: Bố cục rộng hơn --- */
 .blogDivider {
   margin: 2rem auto;
-  max-width: 1140px; /* Tăng chiều rộng */
+  // max-width: 1140px; /* Tăng chiều rộng */
   border-color: rgba(229, 163, 179, 0.2);
 }
 .sidebarBlock {

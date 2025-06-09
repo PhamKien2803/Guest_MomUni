@@ -66,7 +66,7 @@ const DEFAULT_AUTHOR_IMAGE = "/assets/images/momuni-default-avatar.png";
 const DEFAULT_POST_IMAGE_URL =
   "https://placehold.co/1200x550/E5A3B3/FFF7F5?text=MomUni+Blog";
 const DEFAULT_PRODUCT_IMAGE_URL =
-  "https://placehold.co/1200x550/E5A3B3/FFF7F5?text=MomUni+Blog";
+  "/images/shoppe.jpg";
 
 
 function BlogDetailWrapper() {
@@ -610,7 +610,7 @@ function BlogDetailWrapper() {
                               <CardMedia
                                 component="img"
                                 height="140"
-                                image={link.image || '/images/milk2.jpg'}
+                                image={link.image || DEFAULT_PRODUCT_IMAGE_URL}
                                 alt={link.label || "Sản phẩm"}
                                 sx={{ objectFit: 'cover' }}
                               />

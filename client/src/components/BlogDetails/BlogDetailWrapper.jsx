@@ -607,13 +607,23 @@ function BlogDetailWrapper() {
                               }}
                               variants={itemVariants}
                             >
-                              <CardMedia
-                                component="img"
-                                height="140"
-                                image={link.image || DEFAULT_PRODUCT_IMAGE_URL}
-                                alt={link.label || "Sản phẩm"}
-                                sx={{ objectFit: 'cover' }}
-                              />
+                              <Box sx={{ position: 'relative' }}>
+                                <span className={styles.hotBadge}>HOT</span>
+                                <CardMedia
+                                  component="img"
+                                  height="140"
+                                  image={link.image || DEFAULT_PRODUCT_IMAGE_URL}
+                                  alt={link.label || "Sản phẩm"}
+                                  sx={{
+                                    objectFit: 'cover',
+                                    transition: 'transform 0.3s',
+                                    '&:hover': {
+                                      transform: 'scale(1.03)'
+                                    }
+                                  }}
+                                />
+                              </Box>
+
                               <CardContent sx={{ flexGrow: 1 }}>
                                 <Typography
                                   gutterBottom

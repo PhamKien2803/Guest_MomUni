@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link as RouterLink, useParams } from "react-router-dom";
 import axios from "axios";
 import {
@@ -10,7 +10,6 @@ import {
   Box,
   CardMedia,
   Grid,
-  Link,
   Chip,
   TextField,
   Alert,
@@ -18,10 +17,6 @@ import {
   Stack,
   Divider,
   Pagination,
-  Breadcrumbs,
-  List,
-  ListItem,
-  ListItemText,
   ListItemAvatar,
   Avatar,
   Rating,
@@ -62,17 +57,17 @@ const DEFAULT_POST_IMAGE_URL =
   "https://placehold.co/1200x550/E5A3B3/FFF7F5?text=MomUni+Blog";
 
 function BlogDetailWrapper() {
-    const { slug } = useParams();
-    const [blog, setBlog] = useState(null);
-    const [toc, setToc] = useState([]);;
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [comments, setComments] = useState([]);
-    const [newComment, setNewComment] = useState("");
-    const [commenterName, setCommenterName] = useState("");
-    const [isSubmittingComment, setIsSubmittingComment] = useState(false);
-    const [commentError, setCommentError] = useState("");
-    const [commentSuccess, setCommentSuccess] = useState("");
+  const { slug } = useParams();
+  const [blog, setBlog] = useState(null);
+  const [toc, setToc] = useState([]);;
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState("");
+  const [commenterName, setCommenterName] = useState("");
+  const [isSubmittingComment, setIsSubmittingComment] = useState(false);
+  const [commentError, setCommentError] = useState("");
+  const [commentSuccess, setCommentSuccess] = useState("");
 
   const [userRating, setUserRating] = useState(0);
   const [currentBlogRating, setCurrentBlogRating] = useState(0);
@@ -170,8 +165,8 @@ function BlogDetailWrapper() {
               : 0,
           images:
             Array.isArray(fetchedBlog.images) &&
-            fetchedBlog.images.length > 0 &&
-            fetchedBlog.images[0].url
+              fetchedBlog.images.length > 0 &&
+              fetchedBlog.images[0].url
               ? fetchedBlog.images
               : [],
           video: fetchedBlog.video || null,
@@ -380,7 +375,7 @@ function BlogDetailWrapper() {
       <CssBaseline />
       <Container className={styles.blogDetailWrapper} maxWidth="lg">
         <Grid container>
-          <Grid item xs={1} md={1} lg={1}/>
+          <Grid item xs={1} md={1} lg={1} />
           <Grid item xs={10} md={10} lg={10}>
             <Box
               display="flex"
@@ -948,7 +943,7 @@ function BlogDetailWrapper() {
               </Box>
             </Box>
           </Grid>
-          <Grid item xs={1} md={1} lg={1}/>
+          <Grid item xs={1} md={1} lg={1} />
         </Grid>
       </Container>
     </ThemeProvider>

@@ -8,6 +8,7 @@ import {
 } from '@mui/material';
 import {
     Menu as MenuIcon,
+    MailOutline as ContactIcon
 } from '@mui/icons-material';
 import 'swiper/css';
 import 'swiper/css/pagination';
@@ -47,11 +48,11 @@ export const Header = () => {
             <Container maxWidth="xl">
                 <Toolbar disableGutters sx={{ px: 0, py: 0, minHeight: '64px !important' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexGrow: 1, pl: { xs: 1, md: 0 } }}>
-                        <Box component="img" src="/MomUni.svg" alt="MomUni Logo" sx={{ height: 32 }} />
+                        <Box component="img" src="/MomUni.svg" alt="MomUni Logo" sx={{ height: { xs: 40, md: 48 }, mr: 1 }} />
                         <Typography
                             variant="h6"
                             component="div"
-                            sx={{ fontFamily: '"Lora", serif', color: 'text.primary' }}
+                            sx={{ fontFamily: '"Lora", serif', color: 'text.primary', fontSize: { sm: "1.8rem", md: "1.8rem" }, }}
                         >
                             MomUni
                         </Typography>
@@ -63,7 +64,19 @@ export const Header = () => {
                             Trang chủ
                         </Button>
                         <Button variant="text" sx={{ color: 'text.primary' }}>Chủ đề</Button>
-                        <Button variant="contained" color="primary">Liên hệ</Button>
+                        <Button
+                            variant="contained"
+                            startIcon={<ContactIcon />}
+                            onClick={() => { }}
+                            sx={{
+                                borderRadius: '20px',
+                                bgcolor: 'white',
+                                color: '#8F5B6A',
+                                fontWeight: 'bold',
+                            }}
+                        >
+                            Liên hệ
+                        </Button>
                     </Box>
                     <IconButton sx={{ display: { xs: 'flex', md: 'none' }, color: 'text.primary', pr: { xs: 1, md: 0 } }}>
                         <MenuIcon />

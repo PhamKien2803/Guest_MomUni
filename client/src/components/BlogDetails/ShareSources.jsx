@@ -14,7 +14,7 @@ const shareItems = [
         label: "Shopee",
         color: "#ee4d2d",
         iconType: "image",
-        iconSrc: "/assets/icons/shopee.png", // Đường dẫn tới ảnh bạn vừa upload
+        iconSrc: "/assets/icons/shopee.png",
         href: "https://shopee.vn",
     },
     {
@@ -29,7 +29,7 @@ const shareItems = [
         color: "#1877f2",
         iconType: "icon",
         icon: <Facebook />,
-        href: "https://facebook.com",
+        href: "https://www.facebook.com/momunioffficial",
     },
     {
         label: "Tiki",

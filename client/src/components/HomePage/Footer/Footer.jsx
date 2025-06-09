@@ -103,10 +103,8 @@ export default function Footer() {
             <Typography variant="subtitle1" fontWeight="bold">
               MomUni
             </Typography>
-            <Typography variant="body2" sx={{ mt: 1 }}>
-              Mã số thuế : 0123456789
-            </Typography>
-            <Typography variant="body2">Địa chỉ : uwu</Typography>
+
+            <Typography variant="body2">Địa chỉ : Khu Công Nghệ Cao Hòa Lạc, km 29</Typography>
             <Typography variant="body2">Hotline : 0000000000</Typography>
             <Typography variant="body2">
               Website :{" "}
@@ -116,8 +114,8 @@ export default function Footer() {
             </Typography>
             <Typography variant="body2">
               Email :{" "}
-              <Link href="mailto:admin@momuni.vn" color="inherit">
-                admin@momuni.vn
+              <Link href="mailto:momuniofficial@gmail.com" color="inherit">
+                momuniofficial@gmail.com
               </Link>
             </Typography>
           </Grid>
@@ -163,7 +161,7 @@ export default function Footer() {
                     rel="noopener"
                     color="inherit"
                   >
-                    Nina.vn
+                    MomUni Team
                   </Link>
                 </Typography>
               </Grid>

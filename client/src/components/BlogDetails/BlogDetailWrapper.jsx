@@ -46,6 +46,16 @@ import {
 } from "../../components/BlogDetails/theme";
 import TableOfContents from "./TableOfContents";
 import ShareSources from "./ShareSources";
+import { Swiper, SwiperSlide } from "swiper/react";
+import {
+  Navigation,
+  Autoplay as SwiperAutoplay,
+  Pagination as SwiperPagination,
+} from "swiper/modules";
+
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 
 const MotionBox = motion(Box);
 const MotionPaper = motion(Paper);
@@ -55,6 +65,9 @@ const DEFAULT_AUTHOR_NAME = "MomUni Team";
 const DEFAULT_AUTHOR_IMAGE = "/assets/images/momuni-default-avatar.png";
 const DEFAULT_POST_IMAGE_URL =
   "https://placehold.co/1200x550/E5A3B3/FFF7F5?text=MomUni+Blog";
+const DEFAULT_PRODUCT_IMAGE_URL =
+  "https://placehold.co/1200x550/E5A3B3/FFF7F5?text=MomUni+Blog";
+
 
 function BlogDetailWrapper() {
   const { slug } = useParams();
@@ -551,67 +564,103 @@ function BlogDetailWrapper() {
                     )}
                   </MotionPaper>
 
-                  {/* --- KHỐI SẢN PHẨM GỢI Ý --- */}
+                  {/* --- KHỐI SẢN PHẨM GỢI Ý (VỚI CARD RỘNG HƠN) --- */}
                   {blog.affiliateLinks?.length > 0 && (
                     <MotionBox
                       className={styles.blogAffiliateBox}
                       variants={itemVariants}
                     >
-                      <Typography
-                        variant="h6"
-                        gutterBottom
-                        className={styles.blogAffiliateTitle}
-                      >
-                        <ShoppingCartIcon
-                          className={styles.blogAffiliateIcon}
-                        />{" "}
-                        Sản phẩm gợi ý trong bài
+                      <Typography variant="h5" gutterBottom className={styles.blogAffiliateTitle}>
+                        <ShoppingCartIcon className={styles.blogAffiliateIcon} /> Có thể bạn quan tâm
                       </Typography>
-                      <Grid container spacing={2}>
+
+                      <Swiper
+                        modules={[Navigation, SwiperPagination]}
+                        spaceBetween={16}
+                        slidesPerView={2}
+                        navigation
+                        pagination={{ clickable: true }}
+                        breakpoints={{
+                          600: { slidesPerView: 2 },
+                          900: { slidesPerView: 3 },
+                          1200: { slidesPerView: 4 },
+                        }}
+                        style={{
+                          paddingTop: '10px',
+                          paddingBottom: '40px',
+                        }}
+                      >
                         {blog.affiliateLinks.map((link, index) => (
-                          <Grid
-                            item
-                            xs={12}
-                            sm={6}
-                            key={link._id || `aff-${index}`}
-                          >
+                          <SwiperSlide key={link._id || `aff-${index}`} style={{ height: 'auto', paddingBottom: '10px' }}>
                             <MotionCard
-                              className={styles.blogAffiliateCard}
-                              elevation={0}
+                              sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                height: '100%',
+                                borderRadius: 2,
+                                border: '1px solid #e0e0e0',
+                                transition: 'box-shadow 0.3s',
+                                '&:hover': {
+                                  boxShadow: '0 6px 24px rgba(0,0,0,0.08)',
+                                  transform: 'translateY(-2px)',
+                                }
+                              }}
                               variants={itemVariants}
                             >
-                              <CardContent
-                                className={styles.blogAffiliateCardContent}
-                              >
+                              <CardMedia
+                                component="img"
+                                height="140"
+                                image={link.image || '/images/milk2.jpg'}
+                                alt={link.label || "Sản phẩm"}
+                                sx={{ objectFit: 'cover' }}
+                              />
+                              <CardContent sx={{ flexGrow: 1 }}>
                                 <Typography
-                                  variant="subtitle1"
-                                  className={styles.blogAffiliateLabel}
+                                  gutterBottom
+                                  variant="h6"
+                                  component="div"
+                                  title={link.label || "Sản phẩm"}
+                                  sx={{
+                                    fontSize: '1rem',
+                                    fontWeight: 600,
+                                    display: '-webkit-box',
+                                    WebkitBoxOrient: 'vertical',
+                                    WebkitLineClamp: 2,
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    minHeight: '48px',
+                                  }}
                                 >
                                   {link.label || "Sản phẩm"}
                                 </Typography>
                               </CardContent>
-                              <CardActions
-                                className={styles.blogAffiliateActions}
-                              >
+                              <CardActions>
                                 <Button
                                   variant="contained"
-                                  color="secondary"
+                                  color="primary"
+                                  fullWidth
+                                  size="medium"
                                   href={link.url}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  fullWidth
-                                  onClick={() =>
-                                    handleAffiliateLinkClick(link.url, link._id)
-                                  }
-                                  endIcon={<LaunchIcon />}
+                                  onClick={() => handleAffiliateLinkClick(link.url, link._id)}
+                                  sx={{
+                                    fontWeight: 'bold',
+                                    textTransform: 'none',
+                                    boxShadow: 'none',
+                                    '&:hover': {
+                                      boxShadow: 'none',
+                                      transform: 'translateY(-1px)',
+                                    }
+                                  }}
                                 >
-                                  Xem Ngay
+                                  Xem ngay
                                 </Button>
                               </CardActions>
                             </MotionCard>
-                          </Grid>
+                          </SwiperSlide>
                         ))}
-                      </Grid>
+                      </Swiper>
                     </MotionBox>
                   )}
 

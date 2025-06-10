@@ -203,10 +203,22 @@ function BlogDetailWrapper() {
               /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/gim,
               '<a href="$2" target="_blank" rel="noopener noreferrer" style="color: #1976d2; text-decoration: underline;">$1</a>'
             )
-            // .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/gim,
-            //     '<a href="$2" target="_blank" rel="noopener noreferrer" style="color: #1976d2; text-decoration: underline; display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; word-break: break-word;">$1</a>'
-            // )
-            .replace(/\n{2,}/g, "<br/><br/>");
+            .replace(/\n{2,}/g, "<br/><br/>")
+            .replace(/(^\d+\..+(?:\n\d+\..+)*)/gim, match => {
+              const items = match.split(/\n/).map(item => {
+                const content = item.replace(/^\d+\.\s*/, '');
+                return `<li>${content}</li>`;
+              }).join('');
+              return `<ol>${items}</ol>`;
+            })
+            .replace(/(^[*+-]\s.+(?:\n[*+-]\s.+)*)/gim, match => {
+              const items = match.split(/\n/).map(item => {
+                const content = item.replace(/^[*+-]\s*/, '');
+                return `<li>${content}</li>`;
+              }).join('');
+              return `<ul>${items}</ul>`;
+            })
+
 
           const parser = new DOMParser();
           const doc = parser.parseFromString(html, "text/html");

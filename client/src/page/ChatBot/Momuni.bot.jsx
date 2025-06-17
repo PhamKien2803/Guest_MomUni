@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import axios from 'axios';
 import ReactWebChat from 'botframework-webchat';
 import {
   Box,
@@ -17,17 +18,22 @@ const ChatWidget = () => {
   const [pulse, setPulse] = useState(false);
   const userId = useMemo(() => `guest-${Math.floor(Math.random() * 100000)}`, []);
 
-  // Fetch token
   useEffect(() => {
     const fetchToken = async () => {
-      const res = await fetch('https://directline.botframework.com/v3/directline/tokens/generate', {
-        method: 'POST',
-        headers: {
-          Authorization: 'Bearer YOUR_DIRECT_LINE_SECRET',
-        },
-      });
-      const json = await res.json();
-      setToken(json.token);
+      try {
+        const res = await axios.post(
+          'https://directline.botframework.com/v3/directline/tokens/generate',
+          {},
+          {
+            headers: {
+              Authorization: 'Bearer YOUR_DIRECT_LINE_SECRET',
+            },
+          }
+        );
+        setToken(res.data.token);
+      } catch (error) {
+        console.error('Lỗi khi lấy token Direct Line:', error);
+      }
     };
 
     fetchToken();
@@ -108,7 +114,6 @@ const ChatWidget = () => {
         </Box>
       )}
 
-      {/* Khung chat */}
       <Slide direction="up" in={isOpen} mountOnEnter unmountOnExit>
         <Paper
           elevation={10}
@@ -127,7 +132,6 @@ const ChatWidget = () => {
             border: '1px solid #f8bbd0',
           }}
         >
-          {/* Header */}
           <Box
             px={2}
             py={1.5}
@@ -147,20 +151,22 @@ const ChatWidget = () => {
                 MomUni Chat
               </Typography>
             </Box>
-
             <IconButton size="small" onClick={() => setIsOpen(false)} sx={{ color: '#fff' }}>
               <CloseIcon />
             </IconButton>
           </Box>
 
-          {/* Nội dung chat */}
           <Box flex={1} p={0}>
-            {token && (
+            {token ? (
               <ReactWebChat
                 directLine={window.WebChat.createDirectLine({ token })}
                 styleOptions={styleOptions}
                 userID={userId}
               />
+            ) : (
+              <Box p={2}>
+                <Typography fontSize="14px" color="gray">Đang kết nối tới trợ lý AI...</Typography>
+              </Box>
             )}
           </Box>
         </Paper>

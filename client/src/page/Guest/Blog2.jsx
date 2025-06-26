@@ -188,7 +188,6 @@ const DEFAULT_POST_IMAGE_URL = `https://placehold.co/600x338/${paletteConfigFrom
     1
 )}/${paletteConfigFromOldUI.background.default.substring(1)}?text=MomUniBlog`;
 
-// --- FIX: CÁC HẰNG SỐ CẮT CHUỖI ---
 const MAX_TITLE_LENGTH = 65;
 const MAX_SUMMARY_LENGTH = 80;
 
@@ -258,7 +257,6 @@ export default function BlogPageWithCarouselAndFixedTags() {
 
                 if (fetchedPosts.length > 0) {
                     const processedBlogs = fetchedPosts.map((post) => {
-                        // --- FIX: LOGIC CẮT CHUỖI CHO TITLE ---
                         let title = post.title || "Chưa có tiêu đề";
                         if (title.length > MAX_TITLE_LENGTH) {
                             title = title.substring(0, MAX_TITLE_LENGTH).trim();
@@ -269,7 +267,6 @@ export default function BlogPageWithCarouselAndFixedTags() {
                                 ) + "...";
                         }
 
-                        // --- FIX: LOGIC CẮT CHUỖI CHO SUMMARY ---
                         let summary = post.summary || "";
                         if (summary.length > MAX_SUMMARY_LENGTH) {
                             summary = summary.substring(0, MAX_SUMMARY_LENGTH).trim();
@@ -763,6 +760,47 @@ export default function BlogPageWithCarouselAndFixedTags() {
                                 }}
                             />
                         </Typography>
+
+                        <Box
+                            sx={{
+                                mt: 2,
+                                display: 'flex',
+                                justifyContent: 'center',
+                                flexWrap: 'wrap',
+                                gap: 1.2,
+                            }}
+                        >
+                            {Array.isArray(allTagsFromData) &&
+                                allTagsFromData
+                                    .filter((tag) => tag !== "Tất cả")
+                                    .map((tag) => (
+                                        <Chip
+                                            key={`top-tag-${tag}`}
+                                            label={tag}
+                                            clickable
+                                            onClick={() => {
+                                                setSelectedHeaderTag(tag);
+                                                setCurrentPage(1);
+                                                scrollToTop();
+                                            }}
+                                            sx={{
+                                                backgroundColor: elegantThemeWithOldColors.palette.secondary.main,
+                                                color: '#ffffff',
+                                                fontWeight: 600,
+                                                fontSize: '0.9rem',
+                                                px: 1.5,
+                                                py: 1,
+                                                borderRadius: '20px',
+                                                boxShadow: `0 2px 6px ${alpha('#000', 0.15)}`,
+                                                transition: 'all 0.3s ease',
+                                                '&:hover': {
+                                                    backgroundColor: elegantThemeWithOldColors.palette.secondary.dark,
+                                                    transform: 'scale(1.05)',
+                                                },
+                                            }}
+                                        />
+                                    ))}
+                        </Box>
                     </Box>
 
                     {noPostsToShow && (

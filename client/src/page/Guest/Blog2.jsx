@@ -200,7 +200,7 @@ export default function BlogPageWithCarouselAndFixedTags() {
     const [headerSearchQuery, setHeaderSearchQuery] = useState("");
     const [selectedHeaderTag, setSelectedHeaderTag] = useState("Tất cả");
     const [currentPage, setCurrentPage] = useState(1);
-    const postsPerPage = 6;
+    const postsPerPage = 8;
 
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -219,12 +219,12 @@ export default function BlogPageWithCarouselAndFixedTags() {
             path: "/",
             activePaths: ["/", "/blog", "/article/:slug", "/tag/:tag"],
         },
-        {
-            text: "Chủ đề",
-            icon: <TopicsIcon />,
-            path: "/topics",
-            activePaths: ["/topics"],
-        },
+        // {
+        //     text: "Chủ đề",
+        //     icon: <TopicsIcon />,
+        //     path: "/topics",
+        //     activePaths: ["/topics"],
+        // },
     ];
     const isLinkActive = (paths) => {
         const currentPath = window.location.pathname;
@@ -912,25 +912,31 @@ export default function BlogPageWithCarouselAndFixedTags() {
                                 )}
 
                                 {currentRegularNewsPosts.length > 0 && (
-                                    <Grid container spacing={3} alignItems="stretch">
+                                    <Grid
+                                        container
+                                        spacing={3}
+                                        alignItems="stretch"
+                                        justifyContent="center"
+                                    >
                                         {currentRegularNewsPosts.map((post) => (
                                             <Grid
                                                 item
                                                 xs={12}
                                                 sm={6}
-                                                md={6}
+                                                md={4}
                                                 key={`regular-${post.id}`}
-                                                sx={{ display: "flex" }}
+                                                sx={{ display: 'flex', marginTop: 4 }}
                                             >
                                                 <GridBlogCard
                                                     post={post}
                                                     small={false}
-                                                    sx={{ flexGrow: 1 }}
+                                                    sx={{ flexGrow: 1, height: '100%' }}
                                                 />
                                             </Grid>
                                         ))}
                                     </Grid>
                                 )}
+
 
                                 {totalPagesForRegularNews > 1 &&
                                     currentRegularNewsPosts.length > 0 && (

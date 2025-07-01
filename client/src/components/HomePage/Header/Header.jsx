@@ -207,7 +207,7 @@ export const Header = () => {
                     <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 1.5, flexShrink: 0 }}>
                         <Button variant="text" sx={{ color: 'text.primary', fontWeight: 500 }} onClick={handleNavigateToHome}>Về chúng tôi</Button>
                         <Button variant="text" sx={{ color: 'text.primary', fontWeight: 500 }} onClick={handleNavigateToBlog}>Trang chủ</Button>
-                        <Button variant="text" sx={{ color: 'text.primary', fontWeight: 500 }}>Chủ đề</Button>
+                        {/* <Button variant="text" sx={{ color: 'text.primary', fontWeight: 500 }}>Chủ đề</Button> */}
                         <Button variant="contained" startIcon={<ContactIcon />} onClick={() => { }} sx={{ borderRadius: '20px', bgcolor: 'white', color: '#8F5B6A', fontWeight: 'bold', '&:hover': { bgcolor: alpha('#FFFFFF', 0.9) } }}>
                             Liên hệ
                         </Button>

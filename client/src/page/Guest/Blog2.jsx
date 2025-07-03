@@ -226,6 +226,10 @@ export default function BlogPageWithCarouselAndFixedTags() {
         //     activePaths: ["/topics"],
         // },
     ];
+
+    const handleContactClick = () => {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    };
     const isLinkActive = (paths) => {
         const currentPath = window.location.pathname;
         return paths.some((p) => {
@@ -627,7 +631,7 @@ export default function BlogPageWithCarouselAndFixedTags() {
                                 <Button
                                     variant="contained"
                                     startIcon={<ContactIcon />}
-                                    onClick={() => { }}
+                                    onClick={handleContactClick}
                                     sx={{
                                         borderRadius: '20px',
                                         bgcolor: 'white',

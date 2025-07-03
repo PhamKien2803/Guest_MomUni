@@ -91,6 +91,10 @@ export const Header = () => {
     const handleNavigateToBlog = () => navigate('/');
     const handleNavigateToHome = () => navigate('/about-us');
 
+    const handleContactClick = () => {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    };
+
     useEffect(() => {
         const handleScroll = () => setScrolled(window.scrollY > 10);
         window.addEventListener('scroll', handleScroll);
@@ -208,7 +212,7 @@ export const Header = () => {
                         <Button variant="text" sx={{ color: 'text.primary', fontWeight: 500 }} onClick={handleNavigateToHome}>Về chúng tôi</Button>
                         <Button variant="text" sx={{ color: 'text.primary', fontWeight: 500 }} onClick={handleNavigateToBlog}>Trang chủ</Button>
                         {/* <Button variant="text" sx={{ color: 'text.primary', fontWeight: 500 }}>Chủ đề</Button> */}
-                        <Button variant="contained" startIcon={<ContactIcon />} onClick={() => { }} sx={{ borderRadius: '20px', bgcolor: 'white', color: '#8F5B6A', fontWeight: 'bold', '&:hover': { bgcolor: alpha('#FFFFFF', 0.9) } }}>
+                        <Button variant="contained" startIcon={<ContactIcon />} onClick={handleContactClick} sx={{ borderRadius: '20px', bgcolor: 'white', color: '#8F5B6A', fontWeight: 'bold', '&:hover': { bgcolor: alpha('#FFFFFF', 0.9) } }}>
                             Liên hệ
                         </Button>
                     </Box>

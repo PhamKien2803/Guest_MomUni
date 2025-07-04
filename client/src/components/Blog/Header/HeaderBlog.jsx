@@ -108,7 +108,6 @@ function HeaderBlog() {
     const navItems = [
         { text: 'Về chúng tôi', icon: <HomeIcon />, path: '/about-us', activePaths: ['/about-us'] },
         { text: 'Blog', icon: <BookIcon />, path: '/', activePaths: ['/', '/blog', '/article/:slug', '/tag/:tag'] },
-        // { text: 'Chủ đề', icon: <TopicsIcon />, path: '/topics', activePaths: ['/topics'] },
     ];
     const isLinkActive = (paths) => {
         const currentPath = window.location.pathname;

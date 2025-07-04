@@ -51,11 +51,24 @@ export const Header = () => {
         fetchAllPosts();
     }, []);
 
+    // Tìm kiếm theo tiêu đề, tóm tắt, nội dung, tags, tác giả
     useEffect(() => {
         if (searchQuery.trim() !== '') {
-            const results = allPosts.filter(post =>
-                post.title.toLowerCase().includes(searchQuery.toLowerCase())
-            );
+            const lowerQuery = searchQuery.toLowerCase();
+            const results = allPosts.filter(post => {
+                const title = post.title?.toLowerCase() || '';
+                const summary = post.summary?.toLowerCase() || '';
+                const content = post.content?.toLowerCase() || '';
+                const tags = Array.isArray(post.tags) ? post.tags.map(t => (typeof t === 'string' ? t : t?.name || '')).join(' ').toLowerCase() : '';
+                const author = post.author?.toLowerCase() || '';
+                return (
+                    title.includes(lowerQuery) ||
+                    summary.includes(lowerQuery) ||
+                    content.includes(lowerQuery) ||
+                    tags.includes(lowerQuery) ||
+                    author.includes(lowerQuery)
+                );
+            });
             setFilteredResults(results);
         } else {
             setFilteredResults([]);
@@ -190,7 +203,6 @@ export const Header = () => {
                                                 primaryTypographyProps={{
                                                     style: {
                                                         fontWeight: 500,
-                                                        // Giúp tiêu đề không bị quá dài
                                                         display: '-webkit-box',
                                                         WebkitBoxOrient: 'vertical',
                                                         WebkitLineClamp: 2,
@@ -211,7 +223,6 @@ export const Header = () => {
                     <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 1.5, flexShrink: 0 }}>
                         <Button variant="text" sx={{ color: 'text.primary', fontWeight: 500 }} onClick={handleNavigateToHome}>Về chúng tôi</Button>
                         <Button variant="text" sx={{ color: 'text.primary', fontWeight: 500 }} onClick={handleNavigateToBlog}>Trang chủ</Button>
-                        {/* <Button variant="text" sx={{ color: 'text.primary', fontWeight: 500 }}>Chủ đề</Button> */}
                         <Button variant="contained" startIcon={<ContactIcon />} onClick={handleContactClick} sx={{ borderRadius: '20px', bgcolor: 'white', color: '#8F5B6A', fontWeight: 'bold', '&:hover': { bgcolor: alpha('#FFFFFF', 0.9) } }}>
                             Liên hệ
                         </Button>

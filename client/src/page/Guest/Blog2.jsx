@@ -40,7 +40,6 @@ import {
     MailOutline as ContactIcon,
 } from "@mui/icons-material";
 
-// Thêm icon Zalo và Facebook từ public hoặc assets
 import ZaloIcon from '/zalo.svg';
 import FacebookIcon from '/facebook-messenger.svg';
 import { motion } from "framer-motion";
@@ -62,6 +61,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import { GridBlogCard } from '../../components/Blog/BlogCard/GridBlogCard';
 import { BlogSidebar } from '../../components/Blog/BlogSidebar/BlogSidebar';
 import Footer from './../../components/HomePage/Footer/Footer';
+import { Header } from "../../components/HomePage/Header/Header";
 
 const paletteConfigFromOldUI = {
     primary: { main: "#E5A3B3", light: "#F8C8D4", dark: "#BF8A9B" },
@@ -220,13 +220,7 @@ export default function BlogPageWithCarouselAndFixedTags() {
             icon: <BookIcon />,
             path: "/",
             activePaths: ["/", "/blog", "/article/:slug", "/tag/:tag"],
-        },
-        // {
-        //     text: "Chủ đề",
-        //     icon: <TopicsIcon />,
-        //     path: "/topics",
-        //     activePaths: ["/topics"],
-        // },
+        }
     ];
 
     const handleContactClick = () => {
@@ -407,13 +401,13 @@ export default function BlogPageWithCarouselAndFixedTags() {
             .slice(0, 4);
     }, [blogPostsData]);
 
-    const exploreMorePosts = useMemo(() => {
-        const displayedIds = new Set(currentRegularNewsPosts.map((p) => p.id));
-        return blogPostsData
-            .filter((p) => !displayedIds.has(p.id))
-            .sort(() => 0.5 - Math.random())
-            .slice(0, 6);
-    }, [blogPostsData, currentRegularNewsPosts]);
+    // const exploreMorePosts = useMemo(() => {
+    //     const displayedIds = new Set(currentRegularNewsPosts.map((p) => p.id));
+    //     return blogPostsData
+    //         .filter((p) => !displayedIds.has(p.id))
+    //         .sort(() => 0.5 - Math.random())
+    //         .slice(0, 6);
+    // }, [blogPostsData, currentRegularNewsPosts]);
 
     const featuredCarouselPosts = useMemo(() => {
         return [...blogPostsData]
@@ -489,8 +483,9 @@ export default function BlogPageWithCarouselAndFixedTags() {
                     minHeight: "100vh",
                 }}
             >
+                <Header />
                 {/* Header Section */}
-                <AppBar
+                {/* <AppBar
                     position="sticky"
                     elevation={2}
                     sx={{
@@ -657,7 +652,7 @@ export default function BlogPageWithCarouselAndFixedTags() {
                             </IconButton>
                         </Toolbar>
                     </Container>
-                </AppBar>
+                </AppBar> */}
 
 
                 {/* Mobile Drawer */}

@@ -128,7 +128,10 @@ export const Header = () => {
         >
             <Container maxWidth="xl">
                 <Toolbar disableGutters sx={{ px: 0, py: 0, minHeight: '72px !important' }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexShrink: 0 }}>
+                    <Box
+                        sx={{ display: 'flex', alignItems: 'center', gap: 1, flexShrink: 0, cursor: 'pointer' }}
+                        onClick={handleNavigateToBlog}
+                    >
                         <Box component="img" src="/MomUni.svg" alt="MomUni Logo" sx={{ height: { xs: 40, md: 48 }, mr: 1 }} />
                         <Typography variant="h6" component="div" sx={{ fontFamily: '"Lora", serif', color: 'text.primary', fontSize: { sm: "1.8rem", md: "1.8rem" } }}>
                             MomUni

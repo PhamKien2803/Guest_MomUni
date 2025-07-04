@@ -31,8 +31,6 @@ import {
     ArrowForwardIos as ArrowForwardIosIcon,
     Menu as MenuIcon,
     Explore as ExploreIcon,
-    Call as CallIcon,
-    Chat as ChatIcon,
     ArrowUpward as ArrowUpwardIcon,
     FilterList as FilterListIcon,
     StarBorder as StarBorderIcon,
@@ -41,6 +39,10 @@ import {
     Apps as TopicsIcon,
     MailOutline as ContactIcon,
 } from "@mui/icons-material";
+
+// Thêm icon Zalo và Facebook từ public hoặc assets
+import ZaloIcon from '/zalo.svg';
+import FacebookIcon from '/facebook-messenger.svg';
 import { motion } from "framer-motion";
 import { Swiper, SwiperSlide } from "swiper/react";
 import {
@@ -962,17 +964,6 @@ export default function BlogPageWithCarouselAndFixedTags() {
                                         </Box>
                                     )}
                             </Grid>
-
-                            {/* Sidebar */}
-                            {/* <Grid item xs={12} md={4}>
-                                <Paper sx={{ p: { xs: 2, md: 2.5 }, position: 'sticky', top: '145px', borderRadius: '12px' }}>
-                                    <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold', mb: 1.5, color: 'primary.dark', fontSize: '1.1rem' }}>Đọc nhiều nhất</Typography>
-                                    {popularPosts.length > 0 ? popularPosts.map((post, idx) => (<Box key={`popular-${post.id}`} sx={{ display: 'flex', mb: 1.5, alignItems: 'flex-start' }}> <Typography variant="h4" sx={{ color: 'secondary.main', mr: 1.5, lineHeight: 1.2, fontSize: '1.2rem', fontWeight: 600 }}>{idx + 1}.</Typography> <MuiLink component={RouterLink} to={`/blog/${post.slug}`} underline="hover" sx={{ fontWeight: 500, fontSize: '0.875rem', lineHeight: 1.4, color: 'text.primary', '&:hover': { color: 'primary.main' } }}> {post.title} </MuiLink> </Box>)) : <Typography sx={{ fontSize: '0.85rem', color: 'text.secondary' }}>Chưa có dữ liệu.</Typography>}
-                                    <Divider sx={{ my: 2.5 }} />
-                                    <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold', mb: 1.5, color: 'primary.dark', fontSize: '1.1rem' }}>Tags nổi bật</Typography>
-                                    {Array.isArray(allTagsFromData) && allTagsFromData.filter(t => t !== "Tất cả").length > 0 ? (<Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.8 }}> {allTagsFromData.filter(t => t !== "Tất cả").slice(0, 10).map(tag => (<Chip key={tag} label={tag} component={RouterLink} to={`/tag/${tag.toLowerCase().replace(/\s+/g, '-')}`} clickable size="small" sx={{ backgroundColor: alpha(elegantThemeWithOldColors.palette.secondary.light, 0.3), color: elegantThemeWithOldColors.palette.secondary.dark, fontWeight: 500, '&:hover': { backgroundColor: 'secondary.main', color: 'white' } }} />))} </Box>) : <Typography sx={{ fontSize: '0.85rem', color: 'text.secondary' }}>Chưa có tags.</Typography>}
-                                </Paper>
-                            </Grid> */}
                         </Grid>
                     )}
                 </Container>
@@ -980,8 +971,12 @@ export default function BlogPageWithCarouselAndFixedTags() {
                 {/* Footer and FABs */}
                 <Footer />
                 <Box sx={{ position: 'fixed', bottom: '20px', right: '20px', display: 'flex', flexDirection: 'column', gap: 1.5, zIndex: 1200 }}>
-                    <Fab color="primary" size="medium" aria-label="call"><CallIcon /></Fab>
-                    <Fab sx={{ bgcolor: 'secondary.main', color: 'white', '&:hover': { bgcolor: 'secondary.dark' } }} size="medium" aria-label="chat"><ChatIcon /></Fab>
+                    <Fab size="medium" aria-label="zalo" href="https://zalo.me/0329275537" target="_blank" sx={{ bgcolor: 'white', boxShadow: 2, '&:hover': { bgcolor: '#f4f4f4' } }}>
+                        <img src={ZaloIcon} alt="Zalo" style={{ width: 28, height: 28, display: 'block' }} />
+                    </Fab>
+                    <Fab size="medium" aria-label="facebook" href="https://web.facebook.com/momunioffficial" target="_blank" sx={{ bgcolor: 'white', boxShadow: 2, '&:hover': { bgcolor: '#f4f4f4' } }}>
+                        <img src={FacebookIcon} alt="Facebook Messenger" style={{ width: 28, height: 28, display: 'block' }} />
+                    </Fab>
                     <Fab sx={{ bgcolor: alpha(elegantThemeWithOldColors.palette.text.secondary, 0.7), color: 'white', '&:hover': { bgcolor: 'text.primary' } }} size="small" aria-label="scroll-to-top" onClick={scrollToTop}><ArrowUpwardIcon fontSize="small" /></Fab>
                 </Box>
             </Box>

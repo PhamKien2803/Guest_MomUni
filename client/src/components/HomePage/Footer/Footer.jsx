@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
-  // Imports từ khung footer gốc
   Box,
   Container,
   Grid,
@@ -8,7 +7,6 @@ import {
   Stack,
   Link,
   IconButton,
-  // Imports cần thiết cho form
   TextField,
   Button,
   Snackbar,
@@ -18,12 +16,13 @@ import {
   TableRow,
   TableCell,
 } from "@mui/material";
-import { Facebook, YouTube, Send } from "@mui/icons-material";
-import Logo from "/MomUni.svg"; // Đảm bảo đường dẫn đến logo là chính xác
-import axios from 'axios'; // Giả định bạn đã cài đặt axios
+import { Send } from "@mui/icons-material";
+import Logo from "/MomUni.svg";
+import axios from 'axios';
+import ZaloIcon from '/zalo.svg';
+import FacebookIcon from '/facebook-messenger.svg';
 
 export default function Footer() {
-  // === LOGIC CỦA FORM (Đã chính xác, giữ nguyên) ===
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -52,7 +51,6 @@ export default function Footer() {
     e.preventDefault();
     setLoading(true);
     try {
-      // Thay thế bằng API thật của bạn
       await axios.post("expert-form/create", formData);
       setSnackbar({
         open: true,
@@ -72,7 +70,6 @@ export default function Footer() {
     }
   };
 
-  // Style cho các ô trong bảng của form (trên nền trắng)
   const formTableCellSx = {
     border: 0,
     py: 0.75,
@@ -105,11 +102,11 @@ export default function Footer() {
             </Typography>
 
             <Typography variant="body2">Địa chỉ : Khu Công Nghệ Cao Hòa Lạc, km 29</Typography>
-            <Typography variant="body2">Hotline : 0000000000</Typography>
+            <Typography variant="body2">Hotline : 0329275537</Typography>
             <Typography variant="body2">
               Website :{" "}
               <Link href="#" color="inherit">
-                http://momuni.vn
+                https://www.mom-uni.id.vn
               </Link>
             </Typography>
             <Typography variant="body2">
@@ -146,17 +143,30 @@ export default function Footer() {
                   MẠNG XÃ HỘI
                 </Typography>
                 <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2 }}>
-                  <IconButton color="inherit">
-                    <Facebook />
+                  <IconButton
+                    color="inherit"
+                    component="a"
+                    href="https://www.facebook.com/momunioffficial"
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    <img src={FacebookIcon} alt="Facebook" style={{ width: 28, height: 28, display: 'block', backgroundColor: "white" }} />
+
                   </IconButton>
-                  <IconButton color="inherit">
-                    <YouTube />
+                  <IconButton
+                    color="inherit"
+                    component="a"
+                    href="https://zalo.me/g/gaknzd213"
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    <img src={ZaloIcon} alt="Zalo" style={{ width: 28, height: 28, display: 'block', backgroundColor: "white" }} />
                   </IconButton>
                 </Stack>
                 <Typography variant="body2">
                   © 2025 Momuni.vn. Designed by{" "}
                   <Link
-                    href="https://nina.vn"
+                    href="https://web.facebook.com/momunioffficial"
                     target="_blank"
                     rel="noopener"
                     color="inherit"
@@ -203,7 +213,7 @@ export default function Footer() {
                     <TableRow>
                       <TableCell sx={{ ...formTableCellSx }}>Điện thoại</TableCell>
                       <TableCell sx={{ ...formTableCellSx, p: 0 }}>
-                        <TextField variant="outlined" size="small" fullWidth placeholder="Số điện thoại (tùy chọn)" name="phone" type="tel" value={formData.phone} onChange={handleChange} />
+                        <TextField variant="outlined" size="small" fullWidth placeholder="Số điện thoại" name="phone" type="tel" value={formData.phone} onChange={handleChange} />
                       </TableCell>
                     </TableRow>
 

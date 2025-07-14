@@ -191,7 +191,7 @@ export default function Footer() {
               }}
             >
               <Typography variant="subtitle1" fontWeight="bold" sx={{ mb: 2 }}>
-                GỬI CÂU HỎI CHO CHUYÊN GIA
+                GỬI CÂU HỎI CHO CHUYÊN GIA VÀ ĐĂNG KÍ NHẬN THÔNG TIN
               </Typography>
               <Box component="form" noValidate autoComplete="off" onSubmit={handleSubmit}>
                 <Table size="small">

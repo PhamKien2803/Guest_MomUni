@@ -401,14 +401,6 @@ export default function BlogPageWithCarouselAndFixedTags() {
             .slice(0, 4);
     }, [blogPostsData]);
 
-    // const exploreMorePosts = useMemo(() => {
-    //     const displayedIds = new Set(currentRegularNewsPosts.map((p) => p.id));
-    //     return blogPostsData
-    //         .filter((p) => !displayedIds.has(p.id))
-    //         .sort(() => 0.5 - Math.random())
-    //         .slice(0, 6);
-    // }, [blogPostsData, currentRegularNewsPosts]);
-
     const featuredCarouselPosts = useMemo(() => {
         return [...blogPostsData]
             .sort((a, b) => (b.views || 0) - (a.views || 0))
@@ -452,15 +444,24 @@ export default function BlogPageWithCarouselAndFixedTags() {
         return (
             <ThemeProvider theme={elegantThemeWithOldColors}>
                 <CssBaseline />
-                <Container sx={{ py: 3, textAlign: "center" }}>
-                    <Alert severity="error">Lỗi: {error}</Alert>
-                    <Button
-                        variant="outlined"
-                        onClick={() => window.location.reload()}
-                        sx={{ mt: 2 }}
-                    >
-                        Thử lại
-                    </Button>
+                <Container sx={{ py: 8, textAlign: "center" }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+                        <img src="/MomUni.svg" alt="MomUni Logo" style={{ width: 80, marginBottom: 16 }} />
+                        <Typography variant="h3" sx={{ fontWeight: 'bold', color: 'primary.main', mb: 1 }}>
+                            WebMomUni đang bảo trì
+                        </Typography>
+                        <Typography variant="body1" sx={{ color: 'text.secondary', mb: 2 }}>
+                            Hệ thống đang được nâng cấp để phục vụ bạn tốt hơn.<br />Vui lòng quay lại sau ít phút nữa!
+                        </Typography>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => window.location.reload()}
+                            sx={{ fontWeight: 'bold', px: 4 }}
+                        >
+                            Thử lại
+                        </Button>
+                    </Box>
                 </Container>
             </ThemeProvider>
         );
@@ -484,177 +485,6 @@ export default function BlogPageWithCarouselAndFixedTags() {
                 }}
             >
                 <Header />
-                {/* Header Section */}
-                {/* <AppBar
-                    position="sticky"
-                    elevation={2}
-                    sx={{
-                        top: 0,
-                        zIndex: 1100,
-                        backgroundColor: 'pink',
-                        boxShadow: `0 2px 8px ${alpha('#F8C8D4', 0.4)}`,
-                        backdropFilter: "blur(8px)",
-                    }}
-                >
-                    <Container maxWidth="xl">
-                        <Toolbar disableGutters sx={{ minHeight: '72px !important' }}>
-                            <MuiLink
-                                component={RouterLink}
-                                to="/"
-                                underline="none"
-                                sx={{ display: "flex", alignItems: "center", flexShrink: 0 }}
-                            >
-                                <Box
-                                    component="img"
-                                    src="/MomUni.svg"
-                                    alt="MomUni"
-                                    sx={{ height: { xs: 40, md: 48 }, mr: 1 }}
-                                />
-                                <Typography
-                                    variant="h6"
-                                    component="div"
-                                    sx={{ fontFamily: '"Lora", serif', color: 'text.primary', fontSize: { sm: "1.8rem", md: "1.8rem" }, }}
-                                >
-                                    MomUni
-                                </Typography>
-                            </MuiLink>
-                            <Box sx={{ flexGrow: 1 }} />
-                            <Box
-                                sx={{
-                                    display: { xs: "none", md: "flex" },
-                                    alignItems: "center",
-                                    gap: 1.5,
-                                }}
-                            >
-                                <Box sx={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    backgroundColor: 'white',
-                                    borderRadius: '20px',
-                                    padding: '2px 10px',
-                                    gap: 1,
-                                }}>
-                                    <TextField
-                                        variant="standard"
-                                        size="small"
-                                        placeholder="Tìm kiếm..."
-                                        value={headerSearchQuery}
-                                        onChange={(e) => {
-                                            setHeaderSearchQuery(e.target.value);
-                                            setCurrentPage(1);
-                                        }}
-                                        onKeyPress={handleHeaderSearch}
-                                        sx={{
-                                            width: '140px',
-                                            '& .MuiInput-underline:before, & .MuiInput-underline:after, & .MuiInput-underline:hover:not(.Mui-disabled):before': {
-                                                borderBottom: 'none'
-                                            },
-                                            '& .MuiSelect-select': {
-                                                color: 'text.secondary',
-                                                fontSize: '0.9rem',
-                                                height: '1.4375em',
-                                                padding: '8.5px 0 8.5px 8px',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                            },
-                                            '& .MuiSelect-icon': {
-                                                color: 'text.secondary',
-                                                position: 'absolute',
-                                                right: 0,
-                                            }
-                                        }}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <InputAdornment position="start">
-                                                    <SearchIcon sx={{ color: alpha('#8F5B6A', 0.7) }} fontSize="small" />
-                                                </InputAdornment>
-                                            ),
-                                        }}
-                                    />
-                                    <Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
-                                    <TextField
-                                        select
-                                        variant="standard"
-                                        size="small"
-                                        value={selectedHeaderTag}
-                                        onChange={handleTagChange}
-                                        sx={{
-                                            width: '140px',
-                                            '& .MuiInput-underline:before, & .MuiInput-underline:after, & .MuiInput-underline:hover:not(.Mui-disabled):before': {
-                                                borderBottom: 'none'
-                                            },
-                                            '& .MuiSelect-select': {
-                                                color: 'text.secondary',
-                                                fontSize: '0.9rem',
-                                                height: '1.4375em',
-                                                padding: '8.5px 0 8.5px 8px',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                            },
-                                            '& .MuiSelect-icon': {
-                                                color: 'text.secondary',
-                                                position: 'absolute',
-                                                right: 0,
-                                            }
-                                        }}
-                                        SelectProps={{ displayEmpty: true, IconComponent: FilterListIcon }}
-                                        renderValue={(selected) => (selected === "Tất cả" ? "Tất cả chủ đề" : selected)}
-                                    >
-                                        <MenuItem value="Tất cả">Tất cả chủ đề</MenuItem>
-                                        {Array.isArray(allTagsFromData) && allTagsFromData
-                                            .filter(tag => tag !== "Tất cả")
-                                            .map((tag) => (
-                                                <MenuItem key={tag} value={tag} sx={{ fontSize: "0.9rem" }}>
-                                                    {tag}
-                                                </MenuItem>
-                                            ))}
-                                    </TextField>
-                                </Box>
-
-                                <Divider orientation="vertical" flexItem sx={{ mx: 1, borderColor: alpha('#8F5B6A', 0.2) }} />
-                                {navItems.map((item) => (
-                                    <Button
-                                        key={item.text}
-                                        component={RouterLink}
-                                        to={item.path}
-                                        sx={{
-                                            color: '#8F5B6A',
-                                            fontWeight: isLinkActive(item.activePaths) ? 'bold' : 500
-                                        }}
-                                    >
-                                        {item.text}
-                                    </Button>
-                                ))}
-                                <Button
-                                    variant="contained"
-                                    startIcon={<ContactIcon />}
-                                    onClick={handleContactClick}
-                                    sx={{
-                                        borderRadius: '20px',
-                                        bgcolor: 'white',
-                                        color: '#8F5B6A',
-                                        fontWeight: 'bold',
-
-                                    }}
-                                >
-                                    Liên hệ
-                                </Button>
-                            </Box>
-                            <IconButton
-                                sx={{
-                                    display: { xs: "flex", md: "none" },
-                                    color: '#8F5B6A',
-                                }}
-                                aria-label="menu"
-                                onClick={handleMobileMenuOpen}
-                            >
-                                <MenuIcon />
-                            </IconButton>
-                        </Toolbar>
-                    </Container>
-                </AppBar> */}
-
-
                 {/* Mobile Drawer */}
                 <Drawer
                     anchor="right"
